@@ -35,10 +35,18 @@ export async function renderChart({
   format = 'png',
   theme = 'light',
   palette,
+  caption,
   watermark = {},
   logo = null,
 }) {
   applyTheme(config, { theme, palette });
+
+  // caption/source di bawah-kiri — reserve ruang biar ga nabrak axis labels
+  if (caption) {
+    const o = config.options;
+    const p = o.layout && typeof o.layout.padding === 'object' ? o.layout.padding : (o.layout = o.layout || {}, o.layout.padding = { top: 6, right: 18, bottom: 6, left: 8 });
+    p.bottom = (p.bottom || 0) + 24;
+  }
 
   // Load logo image (data URI) sebelum render — async, sekali per request.
   let logoState = null;
@@ -70,7 +78,22 @@ export async function renderChart({
     },
   };
 
+  const captionPlugin = caption ? {
+    id: 'caption',
+    afterDraw(chart) {
+      const c = chart.ctx;
+      c.save();
+      c.font = `400 ${Math.max(10, Math.min(13, Math.round(chart.width * 0.016)))}px sans-serif`;
+      c.fillStyle = theme === 'dark' ? '#94a3b8' : '#94a3b8';
+      c.textAlign = 'left';
+      c.textBaseline = 'bottom';
+      c.fillText(caption, 8, chart.height - 6);
+      c.restore();
+    },
+  } : null;
+
   const plugins = [bgPlugin, brandingPlugin({ watermark, logo: logoState })];
+  if (captionPlugin) plugins.push(captionPlugin);
   if (config?.options?.plugins?.datalabels) plugins.push(DATALABELS);
 
   const merged = {

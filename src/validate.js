@@ -4,7 +4,10 @@ export const SUPPORTED_TYPES = [
   'line', 'bar', 'radar', 'doughnut', 'pie', 'polarArea', 'bubble', 'scatter',
   'area', 'stackedArea', 'horizontalBar', 'stackedBar', 'sparkline',
   'steppedLine', 'gauge', 'progressRing', 'multiAxis', 'mixed',
+  'flowchart', 'graph',
 ];
+
+const DIAGRAM_TYPES = new Set(['flowchart', 'graph']);
 
 export const SUPPORTED_FORMATS = ['png', 'jpeg', 'jpg', 'webp'];
 export const PALETTE_NAMES = ['default', 'cobalt', 'sunset', 'ocean', 'forest', 'candy', 'mono', 'warm'];
@@ -77,7 +80,8 @@ function expandShortcuts(body) {
 
   // --- title / subtitle ---
   if (body.title && !o.plugins.title) o.plugins.title = { display: true, text: body.title };
-  if (body.subtitle && !o.plugins.subtitle) o.plugins.subtitle = { display: true, text: body.subtitle };
+  const sub = body.subtitle || body.description;
+  if (sub && !o.plugins.subtitle) o.plugins.subtitle = { display: true, text: sub };
 
   // --- axis labels ---
   const ensureScale = (axis) => { o.scales = o.scales || {}; o.scales[axis] = o.scales[axis] || {}; return o.scales[axis]; };
@@ -196,9 +200,61 @@ function normalizeLogo(logo) {
 /**
  * Normalisasi request -> opsi renderChart.
  */
+function clampDims(body) {
+  const width = clampNum(body.width, LIMITS.width);
+  const height = clampNum(body.height, LIMITS.height);
+  const devicePixelRatio = clampNum(body.devicePixelRatio ?? body.dpr, LIMITS.devicePixelRatio);
+  if (width * devicePixelRatio * height * devicePixelRatio > MAX_PIXELS) {
+    throw new ValidationError(`Canvas terlalu besar. Maksimal ${MAX_PIXELS.toLocaleString('en')} pixel efektif.`);
+  }
+  return { width, height, devicePixelRatio };
+}
+
+// Flowchart/graph: input via `definition` (syntax mermaid) atau `nodes`+`edges`.
+function normalizeFlowchart(body) {
+  const src = body.chart || body;
+  const definition = body.definition || body.mermaid || src.definition;
+  const nodes = body.nodes || src.nodes;
+  const edges = body.edges || src.edges;
+  if (!definition && !(Array.isArray(nodes) || Array.isArray(edges))) {
+    throw new ValidationError('Flowchart butuh "definition" (syntax mermaid) atau "nodes"+"edges".');
+  }
+  if (typeof definition === 'string' && definition.length > 20_000) {
+    throw new ValidationError('Definition terlalu panjang (maks 20.000 char).');
+  }
+  const theme = body.theme === 'dark' ? 'dark' : 'light';
+  const { width, height, devicePixelRatio } = clampDims(body);
+  const subtitle = body.subtitle || body.description;
+  const caption = typeof body.caption === 'string' ? body.caption
+    : typeof body.source === 'string' ? `Source: ${body.source}` : undefined;
+  const STYLES = new Set(['soft', 'outline', 'solid', 'colorful']);
+  return {
+    kind: 'flowchart',
+    definition,
+    nodes,
+    edges,
+    direction: body.direction,
+    title: typeof body.title === 'string' ? body.title.slice(0, 120) : undefined,
+    subtitle: typeof subtitle === 'string' ? subtitle.slice(0, 160) : undefined,
+    caption: caption ? caption.slice(0, 160) : undefined,
+    style: STYLES.has(body.style) ? body.style : 'soft',
+    width,
+    height,
+    devicePixelRatio,
+    backgroundColor: typeof body.backgroundColor === 'string' ? body.backgroundColor : null,
+    theme,
+    palette: body.palette,
+    watermark: normalizeWatermark(body.watermark),
+    logo: normalizeLogo(body.logo),
+  };
+}
+
 export function normalizeRequest(body = {}) {
   if (typeof body !== 'object' || body === null) throw new ValidationError('Body harus berupa JSON object.');
   rejectProtoKeys(body);
+
+  const rawType = body.type || body.chart?.type;
+  if (DIAGRAM_TYPES.has(rawType)) return normalizeFlowchart(body);
 
   let config = expandShortcuts(body);
 
@@ -225,6 +281,9 @@ export function normalizeRequest(body = {}) {
   let backgroundColor = typeof body.backgroundColor === 'string' ? body.backgroundColor : null;
   if (!backgroundColor) backgroundColor = theme === 'dark' ? '#0f172a' : '#ffffff';
 
+  const caption = typeof body.caption === 'string' ? body.caption
+    : typeof body.source === 'string' ? `Source: ${body.source}` : undefined;
+
   return {
     config,
     width,
@@ -234,6 +293,7 @@ export function normalizeRequest(body = {}) {
     format,
     theme,
     palette: body.palette,
+    caption: caption ? caption.slice(0, 160) : undefined,
     watermark: normalizeWatermark(body.watermark),
     logo: normalizeLogo(body.logo),
   };

@@ -34,6 +34,11 @@ const EXAMPLES = {
     title: 'Your brand, your chart',
     watermark: { text: 'ACME MEDIA', position: 'bottom-left', color: '#2730ff' },
   },
+  flowchart: {
+    type: 'flowchart',
+    definition: 'graph TD\nA[User submits] --> B{Valid?}\nB -->|yes| C[Save to DB]\nB -->|no| D([Show error])\nC --> E((Done))',
+    title: 'Form submission flow',
+  },
 };
 
 function currentParams() {

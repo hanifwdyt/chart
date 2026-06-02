@@ -12,7 +12,7 @@ export const PRESETS = {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
         datasets: [{ label: 'Sales', data: [12, 19, 8, 15, 22, 17], backgroundColor: PALETTE[0] }],
       },
-      options: { plugins: { title: { display: true, text: 'Monthly Sales' } } },
+      options: { plugins: { title: { display: true, text: 'Monthly Sales' }, subtitle: { display: true, text: 'Units sold per month, 2026' } } },
     },
   },
   line: {
@@ -27,7 +27,7 @@ export const PRESETS = {
           { label: 'Signups', data: [30, 45, 40, 60, 75, 90, 70], borderColor: PALETTE[1], backgroundColor: PALETTE[1], tension: 0.35 },
         ],
       },
-      options: { plugins: { title: { display: true, text: 'Weekly Traffic' } } },
+      options: { plugins: { title: { display: true, text: 'Weekly Traffic' }, subtitle: { display: true, text: 'Visitors vs signups, last 7 days' } } },
     },
   },
   area: {
@@ -235,10 +235,18 @@ export const PRESETS = {
       options: { plugins: { title: { display: true, text: 'Revenue vs Conversion' } } },
     },
   },
+  flowchart: {
+    label: 'Flowchart',
+    desc: 'Mermaid-style diagram — no browser needed.',
+    config: {
+      type: 'flowchart',
+      definition: 'graph TD\nA[Request] --> B{Cached?}\nB -->|yes| C([Return image])\nB -->|no| D[Render chart]\nD --> E([Cache])\nE --> C',
+    },
+  },
 };
 
 export const PRESET_ORDER = [
   'bar', 'line', 'area', 'stackedArea', 'horizontalBar', 'stackedBar',
   'pie', 'doughnut', 'gauge', 'progressRing', 'polarArea', 'radar',
-  'scatter', 'bubble', 'sparkline', 'steppedLine', 'multiAxis', 'mixed',
+  'scatter', 'bubble', 'sparkline', 'steppedLine', 'multiAxis', 'mixed', 'flowchart',
 ];

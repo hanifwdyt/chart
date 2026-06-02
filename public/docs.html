@@ -63,6 +63,7 @@
           <a href="#get">GET /chart</a>
           <a href="#params">Parameters</a>
           <a href="#types">Chart types</a>
+          <a href="#flowchart">Flowcharts</a>
           <a href="#aliases">Type aliases</a>
           <a href="#theme">Theme &amp; palette</a>
           <a href="#branding">Branding &amp; logo</a>
@@ -114,7 +115,9 @@
               <tbody>
                 <tr><td><code>labels</code> + <code>values</code></td><td>A single dataset.</td></tr>
                 <tr><td><code>series</code></td><td><code>[{ name, data }]</code> → multiple datasets.</td></tr>
-                <tr><td><code>title</code> / <code>subtitle</code></td><td>Chart title / subtitle.</td></tr>
+                <tr><td><code>title</code></td><td>Bold title, top-left.</td></tr>
+                <tr><td><code>subtitle</code> / <code>description</code></td><td>Muted line under the title.</td></tr>
+                <tr><td><code>caption</code> / <code>source</code></td><td>Small note at the bottom-left (<code>source</code> is prefixed with “Source:”).</td></tr>
                 <tr><td><code>xLabel</code> / <code>yLabel</code></td><td>Axis titles.</td></tr>
                 <tr><td><code>legend</code></td><td><code>false</code> hides it; <code>"top"/"bottom"/"left"/"right"</code> sets position.</td></tr>
                 <tr><td><code>grid</code></td><td><code>false</code> hides grid lines.</td></tr>
@@ -197,6 +200,37 @@
             <div class="chips" id="typeChips"></div>
           </article>
 
+          <article id="flowchart">
+            <h3>Flowcharts &amp; diagrams</h3>
+            <p>Beyond data charts, <code>type: "flowchart"</code> (alias <code>graph</code>) renders node-and-arrow diagrams using a <strong>subset of Mermaid syntax</strong> — laid out server-side with no headless browser.</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · mermaid syntax</span><button class="copy-code">Copy</button></div>
+<pre><code>{
+  "type": "flowchart",
+  "definition": "graph TD\nA[User submits] --&gt; B{Valid?}\nB --&gt;|yes| C[Save to DB]\nB --&gt;|no| D([Show error])\nC --&gt; E((Done))",
+  "title": "Form flow"
+}</code></pre>
+            </div>
+            <p>Or pass structured <code>nodes</code> + <code>edges</code> instead of a definition string:</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · structured</span><button class="copy-code">Copy</button></div>
+<pre><code>{
+  "type": "flowchart",
+  "direction": "LR",
+  "nodes": [{ "id": "a", "label": "Start", "shape": "stadium" }, { "id": "b", "label": "End" }],
+  "edges": [{ "from": "a", "to": "b", "label": "go" }]
+}</code></pre>
+            </div>
+            <ul>
+              <li><strong>Directions:</strong> <code>TD</code>/<code>TB</code> (top-down), <code>LR</code>, <code>RL</code>, <code>BT</code>.</li>
+              <li><strong>Node shapes:</strong> <code>[rect]</code> · <code>(round)</code> · <code>([stadium])</code> · <code>{diamond}</code> · <code>((circle))</code> · <code>{{hexagon}}</code>.</li>
+              <li><strong>Edges:</strong> <code>--&gt;</code> arrow · <code>---</code> line · <code>-.-&gt;</code> dashed · labels via <code>--&gt;|text|</code> or <code>-- text --&gt;</code>.</li>
+              <li><strong>Styles:</strong> <code>style</code> = <code>soft</code> (default) · <code>solid</code> · <code>colorful</code> · <code>outline</code>.</li>
+              <li><strong>title</strong>, <strong>subtitle</strong>, <strong>caption</strong>, <strong>theme</strong>, <strong>palette</strong>, <strong>watermark</strong> and <strong>logo</strong> all apply. Limits: 200 nodes, 400 edges.</li>
+            </ul>
+            <p class="tip">Full Mermaid (sequence, gantt, class, ER) needs a real browser to lay out — flowcharts are supported here because they can be laid out without one.</p>
+          </article>
+
           <article id="aliases">
             <h3>Type aliases</h3>
             <table class="params">
@@ -218,7 +252,7 @@
 <pre><code>{ "type": "bar", "values": [5, 9, 7], "theme": "dark", "palette": "sunset" }
 { "type": "line", "series": [...], "palette": ["#2730ff", "#ff4a1c"] }</code></pre>
             </div>
-            <p>Named palettes: <code>default</code> · <code>cobalt</code> · <code>sunset</code> · <code>ocean</code> · <code>forest</code> · <code>candy</code> · <code>mono</code> · <code>warm</code>.</p>
+            <p>Named palettes: <code>default</code> · <code>cobalt</code> · <code>sunset</code> · <code>ocean</code> · <code>forest</code> · <code>candy</code> · <code>mono</code> · <code>warm</code> · <code>pastel</code> · <code>corporate</code>.</p>
           </article>
 
           <article id="branding">

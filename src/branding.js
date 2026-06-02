@@ -32,33 +32,23 @@ function logoXY(position, w, h, pad, dw, dh) {
  * @param {object|null} opts.watermark  { text, position, color, opacity, size } | null (disabled)
  * @param {object|null} opts.logo       { image, position, height, opacity } | null
  */
-export function brandingPlugin({ watermark, logo } = {}) {
-  return {
-    id: 'hanifBranding',
-    afterDraw(chart) {
-      const { ctx } = chart;
-      const { width, height } = chart;
-
-      // --- watermark text ---
+// Gambar watermark + logo langsung ke ctx — dipakai plugin Chart.js & flowchart.
+export function drawBranding(ctx, width, height, { watermark, logo } = {}) {
+  {
+      // --- watermark text (kecil & subtle — profesional, ga numpuk) ---
       if (watermark) {
         const text = watermark.text || DEFAULT_TEXT;
-        const fontSize = watermark.size || Math.max(10, Math.round(width * 0.018));
-        const opacity = watermark.opacity != null ? watermark.opacity : 0.32;
-        const [x, y, align, baseline] = pos(watermark.position || 'bottom-right', width, height, Math.round(fontSize * 0.8));
+        // ukuran kecil & dibatasi (ga membesar di canvas gede)
+        const fontSize = watermark.size || Math.max(10, Math.min(13, Math.round(Math.min(width, height) * 0.022)));
+        const opacity = watermark.opacity != null ? watermark.opacity : (watermark.color ? 0.5 : 0.26);
+        const [x, y, align, baseline] = pos(watermark.position || 'bottom-right', width, height, Math.round(fontSize * 1.1));
         ctx.save();
-        ctx.font = `600 ${fontSize}px sans-serif`;
+        ctx.font = `500 ${fontSize}px sans-serif`;
         ctx.textAlign = align;
         ctx.textBaseline = baseline === 'middle' ? 'middle' : baseline;
-        if (watermark.color) {
-          ctx.fillStyle = watermark.color;
-          ctx.globalAlpha = opacity;
-          ctx.fillText(text, x, y);
-        } else {
-          ctx.fillStyle = 'rgba(255,255,255,0.5)';
-          ctx.fillText(text, x + 0.5, y + 0.5);
-          ctx.fillStyle = `rgba(15,23,42,${opacity})`;
-          ctx.fillText(text, x, y);
-        }
+        ctx.fillStyle = watermark.color || '#0f172a';
+        ctx.globalAlpha = opacity;
+        ctx.fillText(text, x, y);
         ctx.restore();
       }
 
@@ -76,6 +66,15 @@ export function brandingPlugin({ watermark, logo } = {}) {
         try { ctx.drawImage(img, lx, ly, dw, dh); } catch {}
         ctx.restore();
       }
+  }
+}
+
+// Plugin Chart.js (afterDraw) yang mendelegasikan ke drawBranding.
+export function brandingPlugin({ watermark, logo } = {}) {
+  return {
+    id: 'hanifBranding',
+    afterDraw(chart) {
+      drawBranding(chart.ctx, chart.width, chart.height, { watermark, logo });
     },
   };
 }

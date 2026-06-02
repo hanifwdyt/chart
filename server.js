@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { renderChart, MIME } from './src/renderer.js';
+import { renderFlowchart } from './src/flowchart.js';
 import { normalizeRequest, parseGetConfig, ValidationError, SUPPORTED_TYPES, SUPPORTED_FORMATS } from './src/validate.js';
 import { PRESETS, PRESET_ORDER } from './src/presets.js';
 import { LRUCache, cacheKey, createLimiter } from './src/cache.js';
@@ -62,11 +63,13 @@ async function handleRender(reqBody, res) {
   let cacheStatus = 'HIT';
   if (!buffer) {
     cacheStatus = 'MISS';
-    buffer = await renderLimit(() => renderChart(opts));
+    const render = opts.kind === 'flowchart' ? () => renderFlowchart(opts) : () => renderChart(opts);
+    buffer = await renderLimit(render);
     imageCache.set(key, buffer);
   }
 
-  res.setHeader('Content-Type', MIME[opts.format] || 'image/png');
+  // flowchart selalu PNG
+  res.setHeader('Content-Type', opts.kind === 'flowchart' ? 'image/png' : (MIME[opts.format] || 'image/png'));
   res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
   res.setHeader('X-Cache', cacheStatus);
   res.setHeader('X-Powered-By-Chart', 'chart.hanif.app');
@@ -157,7 +160,8 @@ async function prewarm() {
         const opts = normalizeRequest({ ...PRESETS[key].config, width: w, height: h, format: 'png', backgroundColor: '#ffffff' });
         const k = cacheKey(opts);
         if (!imageCache.get(k)) {
-          imageCache.set(k, await renderLimit(() => renderChart(opts)));
+          const render = opts.kind === 'flowchart' ? () => renderFlowchart(opts) : () => renderChart(opts);
+          imageCache.set(k, await renderLimit(render));
           warmed++;
         }
       } catch { /* skip */ }
