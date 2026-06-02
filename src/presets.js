@@ -166,9 +166,79 @@ export const PRESETS = {
       options: { plugins: { title: { display: true, text: 'Revenue vs Target' } } },
     },
   },
+  stackedArea: {
+    label: 'Stacked Area',
+    desc: 'Filled areas stacked into a total.',
+    config: {
+      type: 'stackedArea',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          { label: 'Organic', data: [20, 30, 28, 40, 45, 52] },
+          { label: 'Paid', data: [10, 14, 18, 16, 22, 26] },
+          { label: 'Referral', data: [5, 8, 7, 12, 14, 18] },
+        ],
+      },
+      options: { plugins: { title: { display: true, text: 'Acquisition Channels' } } },
+    },
+  },
+  steppedLine: {
+    label: 'Stepped Line',
+    desc: 'Step transitions instead of slopes.',
+    config: {
+      type: 'steppedLine',
+      data: {
+        labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+        datasets: [{ label: 'Active pods', data: [2, 2, 5, 8, 6, 3] }],
+      },
+      options: { plugins: { title: { display: true, text: 'Autoscaling Steps' } } },
+    },
+  },
+  sparkline: {
+    label: 'Sparkline',
+    desc: 'Minimal inline trend, no axes.',
+    config: {
+      type: 'sparkline',
+      data: { labels: Array.from({ length: 14 }, (_, i) => i + 1), datasets: [{ data: [4, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15, 19] }] },
+    },
+  },
+  gauge: {
+    label: 'Gauge',
+    desc: 'Half-circle gauge for a single KPI.',
+    config: {
+      type: 'gauge',
+      data: { labels: ['Used', 'Free'], datasets: [{ data: [68, 32], backgroundColor: [PALETTE[0], '#e5e7eb'] }] },
+      options: { plugins: { title: { display: true, text: 'Disk Usage · 68%' } } },
+    },
+  },
+  progressRing: {
+    label: 'Progress Ring',
+    desc: 'Full ring for completion / progress.',
+    config: {
+      type: 'progressRing',
+      data: { labels: ['Done', 'Left'], datasets: [{ data: [82, 18], backgroundColor: [PALETTE[4], '#e5e7eb'] }] },
+      options: { plugins: { title: { display: true, text: 'Goal · 82%' } } },
+    },
+  },
+  multiAxis: {
+    label: 'Multi-Axis',
+    desc: 'Two y-axes for different units.',
+    config: {
+      type: 'multiAxis',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+        datasets: [
+          { label: 'Revenue ($k)', data: [40, 55, 48, 70, 62], yAxisID: 'y', borderColor: PALETTE[0] },
+          { label: 'Conversion (%)', data: [2.1, 2.8, 2.5, 3.4, 3.0], yAxisID: 'y1', borderColor: PALETTE[2] },
+        ],
+      },
+      options: { plugins: { title: { display: true, text: 'Revenue vs Conversion' } } },
+    },
+  },
 };
 
 export const PRESET_ORDER = [
-  'bar', 'line', 'area', 'horizontalBar', 'stackedBar',
-  'pie', 'doughnut', 'polarArea', 'radar', 'scatter', 'bubble', 'mixed',
+  'bar', 'line', 'area', 'stackedArea', 'horizontalBar', 'stackedBar',
+  'pie', 'doughnut', 'gauge', 'progressRing', 'polarArea', 'radar',
+  'scatter', 'bubble', 'sparkline', 'steppedLine', 'multiAxis', 'mixed',
 ];

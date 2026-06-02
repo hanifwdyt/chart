@@ -45,11 +45,21 @@
 
     <div class="pg-toolbar">
       <label>Preset<select id="presetSelect"></select></label>
+      <label>Theme<select id="pgTheme"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label>Palette<select id="pgPalette"><option value="">Default</option><option value="cobalt">Cobalt</option><option value="sunset">Sunset</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="candy">Candy</option><option value="mono">Mono</option><option value="warm">Warm</option></select></label>
       <label>Width<input id="pgWidth" type="number" value="800" min="50" max="3000" /></label>
       <label>Height<input id="pgHeight" type="number" value="500" min="50" max="3000" /></label>
       <label>Format<select id="pgFormat"><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select></label>
       <label>Background<input id="pgBg" type="text" value="#ffffff" /></label>
       <label class="chk"><input id="pgWatermark" type="checkbox" checked /> Watermark</label>
+    </div>
+
+    <div class="pg-examples">
+      <span class="pg-ex-label">Try:</span>
+      <button class="pg-chip" data-ex="shortcut">Shortcut mode</button>
+      <button class="pg-chip" data-ex="dark">Dark + series</button>
+      <button class="pg-chip" data-ex="gauge">Gauge KPI</button>
+      <button class="pg-chip" data-ex="branding">B2B branding</button>
     </div>
 
     <div class="pg-grid">
@@ -59,7 +69,7 @@
         <div id="pgError" class="pg-error" hidden></div>
       </div>
       <div class="pg-pane">
-        <div class="pg-pane-head"><span>output</span><div class="pg-actions"><button id="copyUrlBtn" class="copy-code" style="border-color:var(--ink);color:var(--ink-soft);">Copy URL</button><a id="downloadBtn" class="copy-code" style="border-color:var(--ink);color:var(--ink-soft);text-decoration:none;" download="chart.png">Download</a></div></div>
+        <div class="pg-pane-head"><span>output <span id="pgBadge" class="pg-badge"></span></span><div class="pg-actions"><button id="copyUrlBtn" class="copy-code" style="border-color:var(--ink);color:var(--ink-soft);">Copy URL</button><a id="downloadBtn" class="copy-code" style="border-color:var(--ink);color:var(--ink-soft);text-decoration:none;" download="chart.png">Download</a></div></div>
         <div class="pg-canvas">
           <img id="pgImg" alt="Rendered chart preview" />
           <div id="pgLoading" class="pg-loading" hidden>rendering…</div>

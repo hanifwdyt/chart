@@ -1,0 +1,83 @@
+// Branding plugin: watermark teks (default chart.hanif.app atau custom) +
+// optional logo image overlay. Dipakai B2B media yang mau branding sendiri.
+
+const DEFAULT_TEXT = 'chart.hanif.app';
+
+function pos(position, w, h, pad, bw, bh) {
+  const map = {
+    'top-left': [pad, pad, 'left', 'top'],
+    'top-right': [w - pad, pad, 'right', 'top'],
+    'bottom-left': [pad, h - pad, 'left', 'bottom'],
+    'bottom-right': [w - pad, h - pad, 'right', 'bottom'],
+    'top-center': [w / 2, pad, 'center', 'top'],
+    'bottom-center': [w / 2, h - pad, 'center', 'bottom'],
+    center: [w / 2, h / 2, 'center', 'middle'],
+  };
+  return map[position] || map['bottom-right'];
+}
+
+// Hitung koordinat kiri-atas untuk gambar logo sesuai posisi.
+function logoXY(position, w, h, pad, dw, dh) {
+  const right = w - pad - dw, bottom = h - pad - dh, cx = (w - dw) / 2, cy = (h - dh) / 2;
+  const map = {
+    'top-left': [pad, pad], 'top-right': [right, pad],
+    'bottom-left': [pad, bottom], 'bottom-right': [right, bottom],
+    'top-center': [cx, pad], 'bottom-center': [cx, bottom], center: [cx, cy],
+  };
+  return map[position] || map['top-right'];
+}
+
+/**
+ * @param {object} opts
+ * @param {object|null} opts.watermark  { text, position, color, opacity, size } | null (disabled)
+ * @param {object|null} opts.logo       { image, position, height, opacity } | null
+ */
+export function brandingPlugin({ watermark, logo } = {}) {
+  return {
+    id: 'hanifBranding',
+    afterDraw(chart) {
+      const { ctx } = chart;
+      const { width, height } = chart;
+
+      // --- watermark text ---
+      if (watermark) {
+        const text = watermark.text || DEFAULT_TEXT;
+        const fontSize = watermark.size || Math.max(10, Math.round(width * 0.018));
+        const opacity = watermark.opacity != null ? watermark.opacity : 0.32;
+        const [x, y, align, baseline] = pos(watermark.position || 'bottom-right', width, height, Math.round(fontSize * 0.8));
+        ctx.save();
+        ctx.font = `600 ${fontSize}px sans-serif`;
+        ctx.textAlign = align;
+        ctx.textBaseline = baseline === 'middle' ? 'middle' : baseline;
+        if (watermark.color) {
+          ctx.fillStyle = watermark.color;
+          ctx.globalAlpha = opacity;
+          ctx.fillText(text, x, y);
+        } else {
+          ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          ctx.fillText(text, x + 0.5, y + 0.5);
+          ctx.fillStyle = `rgba(15,23,42,${opacity})`;
+          ctx.fillText(text, x, y);
+        }
+        ctx.restore();
+      }
+
+      // --- logo image ---
+      if (logo && logo.image) {
+        const img = logo.image;
+        const targetH = logo.height || Math.max(24, Math.round(height * 0.08));
+        const ratio = img.width && img.height ? img.width / img.height : 1;
+        const dh = targetH;
+        const dw = Math.round(targetH * ratio);
+        const pad = logo.margin != null ? logo.margin : Math.round(targetH * 0.4);
+        const [lx, ly] = logoXY(logo.position || 'top-right', width, height, pad, dw, dh);
+        ctx.save();
+        ctx.globalAlpha = logo.opacity != null ? logo.opacity : 1;
+        try { ctx.drawImage(img, lx, ly, dw, dh); } catch {}
+        ctx.restore();
+      }
+    },
+  };
+}
+
+export { DEFAULT_TEXT };

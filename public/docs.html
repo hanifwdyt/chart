@@ -58,11 +58,14 @@
       <div class="docs-layout">
         <aside class="docs-toc" aria-label="On this page">
           <a href="#overview">Overview</a>
+          <a href="#shortcut">Shortcut mode</a>
           <a href="#post">POST /chart</a>
           <a href="#get">GET /chart</a>
           <a href="#params">Parameters</a>
           <a href="#types">Chart types</a>
           <a href="#aliases">Type aliases</a>
+          <a href="#theme">Theme &amp; palette</a>
+          <a href="#branding">Branding &amp; logo</a>
           <a href="#auto">Auto-theming</a>
           <a href="#meta">Metadata endpoints</a>
           <a href="#limits">Limits</a>
@@ -79,6 +82,46 @@
               <li><strong>GET</strong> with the config in the query string — best for dropping straight into an <code>&lt;img src&gt;</code>.</li>
             </ul>
             <p>Every image carries a <code>chart.hanif.app</code> watermark in the bottom-right corner. It can be disabled with <code>watermark: false</code>.</p>
+          </article>
+
+          <article id="shortcut">
+            <h3>Shortcut mode</h3>
+            <p>For the common case you don't need the full Chart.js shape. Pass <code>labels</code> + <code>values</code> (or <code>series</code>) and a few top-level shortcuts, and the API expands them into a complete config:</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · minimal</span><button class="copy-code">Copy</button></div>
+<pre><code>{
+  "type": "bar",
+  "labels": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+  "values": [12, 19, 8, 15, 22],
+  "title": "Weekly orders",
+  "theme": "dark"
+}</code></pre>
+            </div>
+            <p>Multiple series with the <code>series</code> shortcut:</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · series</span><button class="copy-code">Copy</button></div>
+<pre><code>{
+  "type": "line",
+  "labels": ["Jan", "Feb", "Mar"],
+  "series": [
+    { "name": "Revenue", "data": [40, 55, 48] },
+    { "name": "Target",  "data": [50, 50, 60] }
+  ]
+}</code></pre>
+            </div>
+            <table class="params">
+              <thead><tr><th>Shortcut</th><th>Expands to</th></tr></thead>
+              <tbody>
+                <tr><td><code>labels</code> + <code>values</code></td><td>A single dataset.</td></tr>
+                <tr><td><code>series</code></td><td><code>[{ name, data }]</code> → multiple datasets.</td></tr>
+                <tr><td><code>title</code> / <code>subtitle</code></td><td>Chart title / subtitle.</td></tr>
+                <tr><td><code>xLabel</code> / <code>yLabel</code></td><td>Axis titles.</td></tr>
+                <tr><td><code>legend</code></td><td><code>false</code> hides it; <code>"top"/"bottom"/"left"/"right"</code> sets position.</td></tr>
+                <tr><td><code>grid</code></td><td><code>false</code> hides grid lines.</td></tr>
+                <tr><td><code>stacked</code></td><td><code>true</code> stacks both axes.</td></tr>
+              </tbody>
+            </table>
+            <p class="tip">Shortcuts never override explicit <code>options</code> — set both and your <code>options</code> win.</p>
           </article>
 
           <article id="post">
@@ -140,7 +183,10 @@
                 <tr><td><code>devicePixelRatio</code></td><td>number</td><td><code>2</code></td><td>Crispness multiplier, 1–4.</td></tr>
                 <tr><td><code>backgroundColor</code></td><td>string</td><td><code>#ffffff</code></td><td>Any CSS color, or <code>transparent</code>.</td></tr>
                 <tr><td><code>format</code></td><td>string</td><td><code>png</code></td><td><code>png</code> · <code>jpeg</code> · <code>webp</code>.</td></tr>
-                <tr><td><code>watermark</code></td><td>boolean</td><td><code>true</code></td><td>Show the domain watermark.</td></tr>
+                <tr><td><code>theme</code></td><td>string</td><td><code>light</code></td><td><code>light</code> or <code>dark</code> (dark sets a dark bg + light text).</td></tr>
+                <tr><td><code>palette</code></td><td>string / array</td><td><code>default</code></td><td>Named palette or a custom <code>["#...", …]</code> array.</td></tr>
+                <tr><td><code>watermark</code></td><td>bool / string / object</td><td><code>true</code></td><td>See <a class="link-tick" href="#branding">Branding</a>.</td></tr>
+                <tr><td><code>logo</code></td><td>string / object</td><td><code>—</code></td><td>Overlay your own logo (base64 data URI). See <a class="link-tick" href="#branding">Branding</a>.</td></tr>
               </tbody>
             </table>
           </article>
@@ -162,6 +208,45 @@
                 <tr><td><code>mixed</code></td><td>bar</td><td>Each dataset may set its own <code>type</code> (bar/line).</td></tr>
               </tbody>
             </table>
+          </article>
+
+          <article id="theme">
+            <h3>Theme &amp; palette</h3>
+            <p>Set <code>theme: "dark"</code> for a dark background with light text and grid — ideal for dashboards and dark UIs. Pick a <code>palette</code> by name or pass your own colors:</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON</span><button class="copy-code">Copy</button></div>
+<pre><code>{ "type": "bar", "values": [5, 9, 7], "theme": "dark", "palette": "sunset" }
+{ "type": "line", "series": [...], "palette": ["#2730ff", "#ff4a1c"] }</code></pre>
+            </div>
+            <p>Named palettes: <code>default</code> · <code>cobalt</code> · <code>sunset</code> · <code>ocean</code> · <code>forest</code> · <code>candy</code> · <code>mono</code> · <code>warm</code>.</p>
+          </article>
+
+          <article id="branding">
+            <h3>Branding &amp; logo</h3>
+            <p>Built for teams shipping charts under their own brand. Replace the watermark text, reposition it, or overlay your own logo image.</p>
+            <p><strong>Custom watermark</strong> — pass a string, or an object for full control:</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · watermark</span><button class="copy-code">Copy</button></div>
+<pre><code>"watermark": false                       // remove it
+"watermark": "ACME Media"                // custom text
+"watermark": {
+  "text": "ACME Media",
+  "position": "bottom-left",             // any corner / center
+  "color": "#2730ff",
+  "opacity": 0.4
+}</code></pre>
+            </div>
+            <p><strong>Logo overlay</strong> — supply a base64 data URI (external URLs are rejected for safety):</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · logo</span><button class="copy-code">Copy</button></div>
+<pre><code>"logo": {
+  "src": "data:image/png;base64,iVBORw0KG...",
+  "position": "top-right",
+  "height": 40,
+  "opacity": 1
+}</code></pre>
+            </div>
+            <p class="tip">Positions: <code>top-left</code> · <code>top-right</code> · <code>bottom-left</code> · <code>bottom-right</code> · <code>top-center</code> · <code>bottom-center</code> · <code>center</code>.</p>
           </article>
 
           <article id="auto">

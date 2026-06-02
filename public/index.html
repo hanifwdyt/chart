@@ -71,9 +71,9 @@
             <a class="link-tick" href="/docs">Read the API docs</a>
           </div>
           <div class="hero-meta reveal" data-d="4">
-            <div class="stat"><b>12+</b><span>chart types</span></div>
+            <div class="stat"><b>18+</b><span>chart types</span></div>
             <div class="stat"><b>3</b><span>PNG · JPEG · WebP</span></div>
-            <div class="stat"><b>~30ms</b><span>cached response</span></div>
+            <div class="stat"><b>~1ms</b><span>cached response</span></div>
           </div>
         </div>
 
@@ -154,6 +154,16 @@
           <h4>Hardened input</h4>
           <p>Pixel-area caps, dataset limits and prototype-pollution guards keep one bad request from spoiling the rest.</p>
         </div>
+        <div class="feat-card wide">
+          <span class="ic">[ BRANDING · B2B ]</span>
+          <h4>Your brand, on every chart</h4>
+          <p>Swap the watermark for your own text, overlay your logo, and switch to a dark theme — built for media teams and platforms generating charts at scale.</p>
+        </div>
+        <div class="feat-card">
+          <span class="ic">[ SHORTCUTS ]</span>
+          <h4>Minimal payloads</h4>
+          <p>Skip the boilerplate: <code>{ type, labels, values, title }</code> is a valid request. Shortcuts expand into a full config.</p>
+        </div>
       </div>
     </section>
 
@@ -175,7 +185,7 @@
 
     <!-- CODE -->
     <section class="section-pad wrap" style="padding-top:0;">
-      <div style="display:grid;grid-template-columns:0.9fr 1.1fr;gap:clamp(28px,4vw,56px);align-items:center;" class="code-split">
+      <div class="code-split">
         <div>
           <p class="fig-label reveal">Fig. 04 — One request</p>
           <h2 class="display reveal" data-d="1" style="margin-bottom:18px;">Copy, paste,<br /><span class="serif-italic">ship.</span></h2>
@@ -183,17 +193,16 @@
           <a class="btn btn--cobalt reveal" data-d="3" href="/docs" style="margin-top:26px;">Full reference <span class="arr">→</span></a>
         </div>
         <div class="codeframe reveal" data-d="2" data-code>
-          <div class="cf-head"><span>curl</span><button class="copy-code">Copy</button></div>
-<pre><code><span class="c"># POST a config, save the image</span>
+          <div class="cf-head"><span>curl · shortcut mode</span><button class="copy-code">Copy</button></div>
+<pre><code><span class="c"># labels + values is all you need</span>
 curl -X POST https://chart.hanif.app/api/v1/chart \
   -H <span class="s">"Content-Type: application/json"</span> \
   -o chart.png \
   -d <span class="s">'{
     "type": "bar",
-    "data": {
-      "labels": ["Jan", "Feb", "Mar"],
-      "datasets": [{ "data": [<span class="n">12</span>, <span class="n">19</span>, <span class="n">8</span>] }]
-    }
+    "labels": ["Jan", "Feb", "Mar"],
+    "values": [<span class="n">12</span>, <span class="n">19</span>, <span class="n">8</span>],
+    "title": "Monthly orders"
   }'</span></code></pre>
         </div>
       </div>

@@ -13,8 +13,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Cache buffer image + limiter render (CPU-bound) biar event loop ga ke-flood.
-const imageCache = new LRUCache(Number(process.env.CACHE_SIZE) || 300);
-const renderLimit = createLimiter(Number(process.env.RENDER_CONCURRENCY) || 4);
+const imageCache = new LRUCache(Number(process.env.CACHE_SIZE) || 500);
+const renderLimit = createLimiter(Number(process.env.RENDER_CONCURRENCY) || 6);
 
 app.disable('x-powered-by');
 app.set('trust proxy', 1); // di belakang reverse proxy Coolify -> rate limit per real IP
@@ -43,9 +43,11 @@ app.use('/api', (req, res, next) => {
 });
 
 // Rate limit render endpoint (anonymous tier). SaaS nanti: per-API-key tier.
+// Limit cukup longgar: 1 halaman bisa nge-embed belasan chart, jadi 300/menit
+// per IP aman buat browsing normal tapi tetep ngeblok flooding.
 const renderLimiter = rateLimit({
   windowMs: 60_000,
-  max: Number(process.env.RATE_LIMIT_PER_MIN) || 60,
+  max: Number(process.env.RATE_LIMIT_PER_MIN) || 300,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'RateLimited', message: 'Terlalu banyak request. Coba lagi sebentar.' },
@@ -141,7 +143,28 @@ app.use((err, req, res, next) => {
 
 const server = app.listen(PORT, () => {
   console.log(`chart.hanif.app listening on :${PORT}`);
+  prewarm();
 });
+
+// Pre-warm: render preset di ukuran yang dipakai website + warm-up JIT Chart.js,
+// jadi visit pertama langsung cache HIT (~1ms) bukan cold render (~250ms).
+async function prewarm() {
+  const sizes = [[520, 325], [480, 300], [760, 500]];
+  let warmed = 0;
+  for (const key of PRESET_ORDER) {
+    for (const [w, h] of sizes) {
+      try {
+        const opts = normalizeRequest({ ...PRESETS[key].config, width: w, height: h, format: 'png', backgroundColor: '#ffffff' });
+        const k = cacheKey(opts);
+        if (!imageCache.get(k)) {
+          imageCache.set(k, await renderLimit(() => renderChart(opts)));
+          warmed++;
+        }
+      } catch { /* skip */ }
+    }
+  }
+  console.log(`prewarm: ${warmed} charts cached`);
+}
 
 // Graceful shutdown + safety net
 process.on('SIGTERM', shutdown);

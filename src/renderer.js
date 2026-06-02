@@ -1,15 +1,13 @@
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, loadImage } from '@napi-rs/canvas';
 import { Chart } from 'chart.js/auto';
 import { _adapters } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { watermarkPlugin } from './watermark.js';
+import { brandingPlugin } from './branding.js';
 import { applyGlobalDefaults, applyTheme } from './theme.js';
 
-// Default global (font, warna teks, grid) — dipanggil sekali di startup.
 applyGlobalDefaults(Chart);
 
 // Minimal time adapter so time-axis charts don't crash headless.
-// Cukup buat formatting angka epoch jadi tanggal sederhana.
 _adapters._date.override({
   formats: () => ({}),
   parse: (v) => (v == null ? null : +new Date(v)),
@@ -26,54 +24,54 @@ _adapters._date.override({
   endOf: (t) => t,
 });
 
-// Datalabels harus di-opt-in per request, jadi register manual saat dipakai.
 const DATALABELS = ChartDataLabels;
 
-const DEFAULT_BG = '#ffffff';
-
-/**
- * Render Chart.js config jadi buffer image.
- * @param {object} opts
- * @param {object} opts.config  Chart.js config { type, data, options }
- * @param {number} opts.width
- * @param {number} opts.height
- * @param {number} opts.devicePixelRatio
- * @param {string} opts.backgroundColor  CSS color atau 'transparent'
- * @param {string} opts.format  'png' | 'jpeg' | 'webp'
- * @param {boolean} opts.watermark  tampilkan watermark chart.hanif.app
- * @returns {Promise<Buffer>}
- */
 export async function renderChart({
   config,
   width = 800,
   height = 600,
   devicePixelRatio = 2,
-  backgroundColor = DEFAULT_BG,
+  backgroundColor = '#ffffff',
   format = 'png',
-  watermark = true,
+  theme = 'light',
+  palette,
+  watermark = {},
+  logo = null,
 }) {
-  // Auto-tema: warna brand + handle legend/label biar output ga "bland".
-  applyTheme(config);
+  applyTheme(config, { theme, palette });
+
+  // Load logo image (data URI) sebelum render — async, sekali per request.
+  let logoState = null;
+  if (logo && logo.src) {
+    try {
+      const buf = Buffer.from(logo.src.split(',')[1], 'base64');
+      const img = await loadImage(buf);
+      logoState = { ...logo, image: img };
+    } catch { /* logo gagal di-load -> skip, jangan gagalin render */ }
+  }
 
   const canvas = createCanvas(width * devicePixelRatio, height * devicePixelRatio);
-  // Polyfill ringan biar Chart.js happy di headless.
   canvas.style = { width: `${width}px`, height: `${height}px` };
-
   const ctx = canvas.getContext('2d');
 
-  // Background fill (kecuali transparent)
   const transparent = backgroundColor === 'transparent' || backgroundColor === 'none';
-  if (!transparent) {
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }
+  // Background di-fill via plugin: Chart.js clear() canvas tiap draw, jadi fill
+  // manual sebelum render bakal ke-wipe. destination-over nempelin di belakang.
+  const bgPlugin = {
+    id: 'bgFill',
+    beforeDraw(chart) {
+      if (transparent) return;
+      const c = chart.ctx;
+      c.save();
+      c.globalCompositeOperation = 'destination-over';
+      c.fillStyle = backgroundColor;
+      c.fillRect(0, 0, chart.width, chart.height);
+      c.restore();
+    },
+  };
 
-  const plugins = [watermarkPlugin({ enabled: watermark, devicePixelRatio })];
-
-  // Aktifkan datalabels cuma kalau diminta di options.plugins.datalabels
-  if (config?.options?.plugins?.datalabels) {
-    plugins.push(DATALABELS);
-  }
+  const plugins = [bgPlugin, brandingPlugin({ watermark, logo: logoState })];
+  if (config?.options?.plugins?.datalabels) plugins.push(DATALABELS);
 
   const merged = {
     ...config,
@@ -82,9 +80,7 @@ export async function renderChart({
       animation: false,
       devicePixelRatio,
       ...config.options,
-      plugins: {
-        ...(config.options?.plugins || {}),
-      },
+      plugins: { ...(config.options?.plugins || {}) },
     },
     plugins,
   };
@@ -93,23 +89,13 @@ export async function renderChart({
   let buffer;
   try {
     chart.update('none');
-    if (format === 'jpeg' || format === 'jpg') {
-      buffer = canvas.toBuffer('image/jpeg', 90);
-    } else if (format === 'webp') {
-      buffer = canvas.toBuffer('image/webp', 90);
-    } else {
-      buffer = canvas.toBuffer('image/png');
-    }
+    if (format === 'jpeg' || format === 'jpg') buffer = canvas.toBuffer('image/jpeg', 90);
+    else if (format === 'webp') buffer = canvas.toBuffer('image/webp', 90);
+    else buffer = canvas.toBuffer('image/png');
   } finally {
-    // Selalu destroy walau render error -> ga ada leak listener/canvas.
     chart.destroy();
   }
   return buffer;
 }
 
-export const MIME = {
-  png: 'image/png',
-  jpeg: 'image/jpeg',
-  jpg: 'image/jpeg',
-  webp: 'image/webp',
-};
+export const MIME = { png: 'image/png', jpeg: 'image/jpeg', jpg: 'image/jpeg', webp: 'image/webp' };

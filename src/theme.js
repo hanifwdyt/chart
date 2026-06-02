@@ -1,23 +1,20 @@
-// Theme & auto-normalisasi data — biar chart keliatan profesional walau user
-// cuma ngasih angka mentah tanpa warna/label. Ini yang bikin output ga "bland".
+// Theme, named palettes & auto-normalisasi data.
+// Bikin chart keliatan profesional walau user cuma ngasih angka mentah.
 
-export const BRAND_PALETTE = [
-  '#6366f1', // indigo
-  '#06b6d4', // cyan
-  '#f43f5e', // rose
-  '#f59e0b', // amber
-  '#10b981', // emerald
-  '#8b5cf6', // violet
-  '#ec4899', // pink
-  '#14b8a6', // teal
-  '#f97316', // orange
-  '#3b82f6', // blue
-];
+export const PALETTES = {
+  default: ['#6366f1', '#06b6d4', '#f43f5e', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#3b82f6'],
+  cobalt: ['#2730ff', '#5b8def', '#00b4d8', '#0077b6', '#90e0ef', '#48cae4'],
+  sunset: ['#ff6b6b', '#f9844a', '#fee440', '#f15bb5', '#9b5de5', '#ee964b'],
+  ocean: ['#0077b6', '#00b4d8', '#48cae4', '#90e0ef', '#023e8a', '#0096c7'],
+  forest: ['#2d6a4f', '#40916c', '#52b788', '#74c69d', '#95d5b2', '#1b4332'],
+  candy: ['#ff499e', '#d264b6', '#a480cf', '#779be7', '#49b6ff', '#5de4c7'],
+  mono: ['#111827', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#4b5563'],
+  warm: ['#e63946', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#577590'],
+};
 
 const ARC_TYPES = new Set(['pie', 'doughnut', 'polarArea']);
 const LINE_LIKE = new Set(['line', 'radar']);
 
-// Tambah alpha ke hex (#rrggbb -> rgba).
 function withAlpha(hex, a) {
   if (typeof hex !== 'string' || hex[0] !== '#' || hex.length < 7) return hex;
   const r = parseInt(hex.slice(1, 3), 16);
@@ -26,10 +23,13 @@ function withAlpha(hex, a) {
   return `rgba(${r}, ${g}, ${b}, ${a})`;
 }
 
-/**
- * Set default global Chart.js sekali di startup (font, warna teks, grid).
- * Dipanggil sekali dari renderer.
- */
+export function resolvePalette(palette) {
+  if (Array.isArray(palette) && palette.length) return palette;
+  if (typeof palette === 'string' && PALETTES[palette]) return PALETTES[palette];
+  return PALETTES.default;
+}
+
+// Default global Chart.js — dipanggil sekali di startup.
 export function applyGlobalDefaults(Chart) {
   Chart.defaults.font.family = "'Inter', 'DejaVu Sans', 'Helvetica Neue', Arial, sans-serif";
   Chart.defaults.font.size = 13;
@@ -46,67 +46,85 @@ export function applyGlobalDefaults(Chart) {
   Chart.defaults.elements.bar.borderSkipped = false;
 }
 
+const DARK = { text: '#cbd5e1', title: '#f1f5f9', grid: 'rgba(148,163,184,0.16)' };
+const LIGHT = { text: '#475569', title: '#0f172a', grid: 'rgba(15,23,42,0.06)' };
+
 /**
- * Normalisasi config user: auto-assign warna & handle label/legend supaya
- * output rapi tanpa maksa user nentuin styling.
- * Mutasi config in-place (config sudah hasil parse JSON, aman).
+ * Normalisasi config: warna (palette), theme dark/light, legend/label.
+ * Mutasi config in-place. opts: { theme, palette }.
  */
-export function applyTheme(config) {
+export function applyTheme(config, { theme = 'light', palette } = {}) {
   const type = config.type;
   const data = config.data || {};
   const datasets = Array.isArray(data.datasets) ? data.datasets : [];
+  const colors = resolvePalette(palette);
+  const t = theme === 'dark' ? DARK : LIGHT;
 
   datasets.forEach((ds, i) => {
     const dsType = ds.type || type;
-    const color = BRAND_PALETTE[i % BRAND_PALETTE.length];
+    const color = colors[i % colors.length];
 
     if (ARC_TYPES.has(dsType)) {
-      // Warna per-segmen
       if (ds.backgroundColor == null && Array.isArray(ds.data)) {
-        ds.backgroundColor = ds.data.map((_, j) => BRAND_PALETTE[j % BRAND_PALETTE.length]);
+        ds.backgroundColor = ds.data.map((_, j) => colors[j % colors.length]);
       }
-      if (ds.borderColor == null) ds.borderColor = '#ffffff';
+      if (ds.borderColor == null) ds.borderColor = theme === 'dark' ? '#0f172a' : '#ffffff';
       if (ds.borderWidth == null) ds.borderWidth = 2;
     } else if (LINE_LIKE.has(dsType)) {
       if (ds.borderColor == null) ds.borderColor = color;
       if (ds.backgroundColor == null) ds.backgroundColor = ds.fill ? withAlpha(color, 0.18) : color;
-      if (ds.tension == null && dsType === 'line') ds.tension = 0.35;
+      if (ds.tension == null && dsType === 'line' && ds.stepped == null) ds.tension = 0.35;
       if (ds.borderWidth == null) ds.borderWidth = 2.5;
       if (ds.pointRadius == null) ds.pointRadius = dsType === 'radar' ? 3 : 2.5;
       if (ds.pointBackgroundColor == null) ds.pointBackgroundColor = color;
     } else {
-      // bar / scatter / bubble
       if (ds.backgroundColor == null) {
         ds.backgroundColor = dsType === 'scatter' || dsType === 'bubble' ? withAlpha(color, 0.65) : color;
       }
-      if (ds.borderColor == null && (dsType === 'scatter' || dsType === 'bubble')) {
-        ds.borderColor = color;
-      }
+      if (ds.borderColor == null && (dsType === 'scatter' || dsType === 'bubble')) ds.borderColor = color;
     }
   });
 
-  // --- Legend & label handling ---
   config.options = config.options || {};
-  config.options.plugins = config.options.plugins || {};
-  const legend = config.options.plugins.legend;
-  const anyLabel = datasets.some((d) => typeof d.label === 'string' && d.label.length);
+  const o = config.options;
+  o.plugins = o.plugins || {};
 
+  // theme colors
+  if (theme === 'dark') {
+    o.color = o.color || t.text;
+    if (o.plugins.title) o.plugins.title.color = o.plugins.title.color || t.title;
+    if (o.plugins.subtitle) o.plugins.subtitle.color = o.plugins.subtitle.color || t.text;
+    o.plugins.legend = o.plugins.legend || {};
+    o.plugins.legend.labels = { color: t.text, ...(o.plugins.legend.labels || {}) };
+    applyGridColor(o, t.grid, t.text);
+  }
+
+  // legend & label handling
+  const legend = o.plugins.legend && o.plugins.legend.display;
+  const anyLabel = datasets.some((d) => typeof d.label === 'string' && d.label.length);
   if (!anyLabel) {
-    if (datasets.length <= 1 && legend === undefined) {
-      // Single dataset tanpa label -> sembunyiin legend (daripada "undefined")
-      config.options.plugins.legend = { display: false };
+    if (datasets.length <= 1 && (!o.plugins.legend || o.plugins.legend.display === undefined)) {
+      o.plugins.legend = { ...(o.plugins.legend || {}), display: false };
     } else {
-      // Multi dataset -> kasih nama default biar ga "undefined"
-      datasets.forEach((d, i) => {
-        if (!d.label) d.label = `Series ${i + 1}`;
-      });
+      datasets.forEach((d, i) => { if (!d.label) d.label = `Series ${i + 1}`; });
     }
   }
 
-  // Layout breathing room
-  if (config.options.layout === undefined) {
-    config.options.layout = { padding: 12 };
-  }
-
+  if (o.layout === undefined) o.layout = { padding: 12 };
   return config;
+}
+
+function applyGridColor(o, grid, tick) {
+  o.scales = o.scales || {};
+  for (const axis of ['x', 'y', 'r']) {
+    if (o.scales[axis] || axis !== 'r') {
+      o.scales[axis] = o.scales[axis] || {};
+      o.scales[axis].grid = { color: grid, ...(o.scales[axis].grid || {}) };
+      o.scales[axis].ticks = { color: tick, ...(o.scales[axis].ticks || {}) };
+      if (axis === 'r') {
+        o.scales[axis].angleLines = { color: grid, ...(o.scales[axis].angleLines || {}) };
+        o.scales[axis].pointLabels = { color: tick, ...(o.scales[axis].pointLabels || {}) };
+      }
+    }
+  }
 }
