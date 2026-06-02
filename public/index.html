@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chart.hanif.app — Chart Image API</title>
+  <meta name="description" content="Kirim data via API, terima image chart. Bar, line, pie, radar, scatter, dan banyak lagi. Gratis, tanpa setup." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%236366f1'/><rect x='22' y='52' width='13' height='26' rx='3' fill='white'/><rect x='43' y='34' width='13' height='44' rx='3' fill='white'/><rect x='64' y='22' width='13' height='56' rx='3' fill='white'/></svg>" />
+</head>
+<body>
+  <!-- NAV -->
+  <header class="nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">chart<span class="dot">.</span>hanif<span class="dot">.</span>app</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#playground">Playground</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#docs">API Docs</a>
+      <a class="gh" href="https://chart.hanif.app/api/v1/types" target="_blank" rel="noopener">API ↗</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="badge">Chart Image API · gratis · tanpa setup</div>
+        <h1>Kirim data. <br />Terima <span class="grad">image chart</span>.</h1>
+        <p class="lede">
+          Satu request API, langsung dapet chart PNG. Bar, line, pie, radar, scatter,
+          dan 12+ jenis lainnya — semua di-render di server, siap di-embed ke email,
+          PDF, dashboard, atau bot.
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#playground">Coba Playground</a>
+          <a class="btn btn-ghost" href="#docs">Baca API Docs</a>
+        </div>
+        <div class="hero-stats">
+          <div><strong>12+</strong><span>jenis chart</span></div>
+          <div><strong>PNG / JPEG / WebP</strong><span>format output</span></div>
+          <div><strong>GET / POST</strong><span>metode API</span></div>
+        </div>
+      </div>
+      <div class="hero-preview">
+        <div class="preview-window">
+          <div class="win-bar"><span></span><span></span><span></span></div>
+          <img id="heroImg" alt="Contoh chart hasil generate" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how">
+    <div class="how-step">
+      <div class="step-num">01</div>
+      <h3>Susun config</h3>
+      <p>JSON sederhana: <code>type</code>, <code>data</code>, <code>options</code>. Sama persis kayak Chart.js.</p>
+    </div>
+    <div class="how-arrow">→</div>
+    <div class="how-step">
+      <div class="step-num">02</div>
+      <h3>Kirim ke API</h3>
+      <p>POST JSON atau GET dengan query. Tanpa API key, tanpa auth.</p>
+    </div>
+    <div class="how-arrow">→</div>
+    <div class="how-step">
+      <div class="step-num">03</div>
+      <h3>Terima image</h3>
+      <p>Dapet PNG ber-watermark <code>chart.hanif.app</code>, siap dipajang di mana aja.</p>
+    </div>
+  </section>
+
+  <!-- PLAYGROUND -->
+  <section class="playground" id="playground">
+    <div class="section-head">
+      <h2>Playground</h2>
+      <p>Edit config di kiri, preview real-time di kanan. Semua di-render lewat API beneran.</p>
+    </div>
+
+    <div class="pg-toolbar">
+      <label>Preset
+        <select id="presetSelect"></select>
+      </label>
+      <label>Lebar
+        <input id="pgWidth" type="number" value="800" min="50" max="3000" />
+      </label>
+      <label>Tinggi
+        <input id="pgHeight" type="number" value="500" min="50" max="3000" />
+      </label>
+      <label>Format
+        <select id="pgFormat">
+          <option value="png">PNG</option>
+          <option value="jpeg">JPEG</option>
+          <option value="webp">WebP</option>
+        </select>
+      </label>
+      <label>Background
+        <input id="pgBg" type="text" value="#ffffff" />
+      </label>
+      <label class="chk">
+        <input id="pgWatermark" type="checkbox" checked /> Watermark
+      </label>
+    </div>
+
+    <div class="pg-grid">
+      <div class="pg-editor">
+        <div class="pg-pane-head">
+          <span>config.json</span>
+          <button id="renderBtn" class="btn btn-sm btn-primary">▶ Render</button>
+        </div>
+        <textarea id="configInput" spellcheck="false"></textarea>
+        <div id="pgError" class="pg-error" hidden></div>
+      </div>
+      <div class="pg-preview">
+        <div class="pg-pane-head">
+          <span>Hasil</span>
+          <div class="pg-actions">
+            <button id="copyUrlBtn" class="btn btn-sm btn-ghost">Copy URL</button>
+            <a id="downloadBtn" class="btn btn-sm btn-ghost" download="chart.png">Download</a>
+          </div>
+        </div>
+        <div class="pg-canvas">
+          <img id="pgImg" alt="Preview chart" />
+          <div id="pgLoading" class="pg-loading" hidden>Rendering…</div>
+        </div>
+      </div>
+    </div>
+    <div class="pg-url">
+      <span class="pg-url-label">GET URL:</span>
+      <code id="pgUrl"></code>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="gallery" id="gallery">
+    <div class="section-head">
+      <h2>Gallery</h2>
+      <p>Semua jenis chart yang didukung. Klik mana aja buat load ke playground.</p>
+    </div>
+    <div id="galleryGrid" class="gallery-grid"></div>
+  </section>
+
+  <!-- DOCS -->
+  <section class="docs" id="docs">
+    <div class="section-head">
+      <h2>API Documentation</h2>
+      <p>Base URL: <code class="inline">https://chart.hanif.app</code></p>
+    </div>
+
+    <div class="docs-layout">
+      <aside class="docs-toc">
+        <a href="#d-overview">Overview</a>
+        <a href="#d-post">POST /api/v1/chart</a>
+        <a href="#d-get">GET /api/v1/chart</a>
+        <a href="#d-params">Parameter</a>
+        <a href="#d-types">Jenis Chart</a>
+        <a href="#d-aliases">Type Alias</a>
+        <a href="#d-meta">Endpoint Metadata</a>
+        <a href="#d-errors">Error Handling</a>
+        <a href="#d-examples">Contoh Kode</a>
+      </aside>
+
+      <div class="docs-body">
+        <article id="d-overview">
+          <h3>Overview</h3>
+          <p>
+            chart.hanif.app nerima config chart (format Chart.js) dan ngebalikin
+            image. Ada dua cara kirim: <strong>POST</strong> dengan JSON body (cocok
+            buat data gede / programatik), atau <strong>GET</strong> dengan config di
+            query string (cocok buat langsung di-embed di <code>&lt;img src&gt;</code>).
+          </p>
+          <p>Tiap image dikasih watermark <code>chart.hanif.app</code> di pojok kanan bawah (bisa dimatiin via param <code>watermark:false</code>).</p>
+        </article>
+
+        <article id="d-post">
+          <h3>POST <code>/api/v1/chart</code></h3>
+          <p>Kirim JSON, terima image (Content-Type sesuai <code>format</code>).</p>
+          <div class="code-block">
+            <div class="code-head"><span>cURL</span><button class="copy-code">Copy</button></div>
+            <pre><code>curl -X POST https://chart.hanif.app/api/v1/chart \
+  -H "Content-Type: application/json" \
+  -o chart.png \
+  -d '{
+    "type": "bar",
+    "data": {
+      "labels": ["Jan", "Feb", "Mar"],
+      "datasets": [{ "label": "Sales", "data": [12, 19, 8] }]
+    },
+    "width": 800,
+    "height": 500,
+    "format": "png"
+  }'</code></pre>
+          </div>
+          <p>Body bisa pakai <strong>flat</strong> (<code>type</code>, <code>data</code>, <code>options</code> di root) atau <strong>nested</strong> (bungkus dalam <code>chart</code>):</p>
+          <div class="code-block">
+            <div class="code-head"><span>JSON · nested</span><button class="copy-code">Copy</button></div>
+            <pre><code>{
+  "chart": { "type": "line", "data": { ... }, "options": { ... } },
+  "width": 800,
+  "height": 500,
+  "backgroundColor": "#ffffff",
+  "format": "png",
+  "watermark": true
+}</code></pre>
+          </div>
+        </article>
+
+        <article id="d-get">
+          <h3>GET <code>/api/v1/chart</code></h3>
+          <p>Config dilempar lewat query param <code>c</code> — bisa JSON ter-encode atau base64. Enak banget buat embed langsung:</p>
+          <div class="code-block">
+            <div class="code-head"><span>HTML</span><button class="copy-code">Copy</button></div>
+            <pre><code>&lt;img src="https://chart.hanif.app/api/v1/chart?c=
+  {%22type%22:%22pie%22,%22data%22:{%22labels%22:[%22A%22,%22B%22],
+  %22datasets%22:[{%22data%22:[60,40]}]}}&width=400" /&gt;</code></pre>
+          </div>
+          <p>Param tambahan (<code>width</code>, <code>height</code>, <code>format</code>, <code>backgroundColor</code>, <code>watermark</code>) ditaruh sebagai query biasa di samping <code>c</code>.</p>
+          <p class="tip">💡 Pakai base64 buat config gede biar URL ga ribet: <code>?c=&lt;base64-json&gt;</code></p>
+        </article>
+
+        <article id="d-params">
+          <h3>Parameter</h3>
+          <table class="params">
+            <thead><tr><th>Param</th><th>Tipe</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+              <tr><td><code>type</code> / <code>chart.type</code></td><td>string</td><td>—</td><td><strong>Wajib.</strong> Jenis chart.</td></tr>
+              <tr><td><code>data</code> / <code>chart.data</code></td><td>object</td><td>—</td><td><strong>Wajib.</strong> <code>{ labels, datasets }</code>.</td></tr>
+              <tr><td><code>options</code></td><td>object</td><td><code>{}</code></td><td>Opsi Chart.js (title, scales, legend, dll).</td></tr>
+              <tr><td><code>width</code></td><td>number</td><td><code>800</code></td><td>Lebar px (50–3000).</td></tr>
+              <tr><td><code>height</code></td><td>number</td><td><code>600</code></td><td>Tinggi px (50–3000).</td></tr>
+              <tr><td><code>devicePixelRatio</code></td><td>number</td><td><code>2</code></td><td>Skala ketajaman (1–4).</td></tr>
+              <tr><td><code>backgroundColor</code></td><td>string</td><td><code>#ffffff</code></td><td>Warna bg, atau <code>transparent</code>.</td></tr>
+              <tr><td><code>format</code></td><td>string</td><td><code>png</code></td><td><code>png</code> · <code>jpeg</code> · <code>webp</code>.</td></tr>
+              <tr><td><code>watermark</code></td><td>boolean</td><td><code>true</code></td><td>Tampilkan watermark domain.</td></tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article id="d-types">
+          <h3>Jenis Chart</h3>
+          <p>Native Chart.js + alias custom:</p>
+          <div class="chips" id="typeChips"></div>
+        </article>
+
+        <article id="d-aliases">
+          <h3>Type Alias</h3>
+          <p>Selain type native Chart.js, ada alias biar lebih gampang:</p>
+          <table class="params">
+            <thead><tr><th>Alias</th><th>Jadi</th><th>Efek</th></tr></thead>
+            <tbody>
+              <tr><td><code>area</code></td><td>line</td><td>Semua dataset di-<code>fill: true</code>.</td></tr>
+              <tr><td><code>horizontalBar</code></td><td>bar</td><td><code>indexAxis: 'y'</code>.</td></tr>
+              <tr><td><code>stackedBar</code></td><td>bar</td><td>Sumbu x & y <code>stacked: true</code>.</td></tr>
+              <tr><td><code>mixed</code></td><td>bar</td><td>Tiap dataset bisa punya <code>type</code> sendiri (bar/line).</td></tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article id="d-meta">
+          <h3>Endpoint Metadata</h3>
+          <table class="params">
+            <thead><tr><th>Endpoint</th><th>Fungsi</th></tr></thead>
+            <tbody>
+              <tr><td><code>GET /api/v1/types</code></td><td>List jenis chart, format, & preset.</td></tr>
+              <tr><td><code>GET /api/v1/presets</code></td><td>Semua config preset.</td></tr>
+              <tr><td><code>GET /api/v1/presets/:key</code></td><td>Config preset tertentu (mis. <code>bar</code>).</td></tr>
+              <tr><td><code>GET /health</code></td><td>Health check.</td></tr>
+            </tbody>
+          </table>
+        </article>
+
+        <article id="d-errors">
+          <h3>Error Handling</h3>
+          <p>Error dibalikin sebagai JSON dengan HTTP status sesuai (<code>400</code> validasi, <code>500</code> render).</p>
+          <div class="code-block">
+            <div class="code-head"><span>JSON · 400</span><button class="copy-code">Copy</button></div>
+            <pre><code>{
+  "error": "ValidationError",
+  "message": "Field \"type\" wajib diisi."
+}</code></pre>
+          </div>
+        </article>
+
+        <article id="d-examples">
+          <h3>Contoh Kode</h3>
+
+          <div class="code-block">
+            <div class="code-head"><span>JavaScript (fetch)</span><button class="copy-code">Copy</button></div>
+            <pre><code>const res = await fetch("https://chart.hanif.app/api/v1/chart", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    type: "line",
+    data: {
+      labels: ["Sen", "Sel", "Rab", "Kam", "Jum"],
+      datasets: [{ label: "Visitor", data: [120, 190, 170, 220, 280] }]
+    }
+  })
+});
+const blob = await res.blob();
+document.querySelector("img").src = URL.createObjectURL(blob);</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-head"><span>Python (requests)</span><button class="copy-code">Copy</button></div>
+            <pre><code>import requests
+
+payload = {
+    "type": "doughnut",
+    "data": {
+        "labels": ["Selesai", "Proses", "Pending"],
+        "datasets": [{"data": [70, 20, 10]}]
+    },
+    "width": 600, "height": 600
+}
+r = requests.post("https://chart.hanif.app/api/v1/chart", json=payload)
+open("chart.png", "wb").write(r.content)</code></pre>
+          </div>
+
+          <div class="code-block">
+            <div class="code-head"><span>Shell (base64 GET)</span><button class="copy-code">Copy</button></div>
+            <pre><code>CFG=$(echo '{"type":"bar","data":{"labels":["A","B"],"datasets":[{"data":[5,9]}]}}' | base64)
+curl "https://chart.hanif.app/api/v1/chart?c=$CFG&width=600" -o chart.png</code></pre>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">chart<span class="dot">.</span>hanif<span class="dot">.</span>app</span>
+    </div>
+    <p>Chart image generation API · render server-side pakai Chart.js · watermark di tiap image.</p>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
