@@ -3,6 +3,10 @@ import { Chart } from 'chart.js/auto';
 import { _adapters } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { watermarkPlugin } from './watermark.js';
+import { applyGlobalDefaults, applyTheme } from './theme.js';
+
+// Default global (font, warna teks, grid) — dipanggil sekali di startup.
+applyGlobalDefaults(Chart);
 
 // Minimal time adapter so time-axis charts don't crash headless.
 // Cukup buat formatting angka epoch jadi tanggal sederhana.
@@ -48,11 +52,12 @@ export async function renderChart({
   format = 'png',
   watermark = true,
 }) {
+  // Auto-tema: warna brand + handle legend/label biar output ga "bland".
+  applyTheme(config);
+
   const canvas = createCanvas(width * devicePixelRatio, height * devicePixelRatio);
   // Polyfill ringan biar Chart.js happy di headless.
   canvas.style = { width: `${width}px`, height: `${height}px` };
-  canvas.width = width * devicePixelRatio;
-  canvas.height = height * devicePixelRatio;
 
   const ctx = canvas.getContext('2d');
 
@@ -85,18 +90,20 @@ export async function renderChart({
   };
 
   const chart = new Chart(ctx, merged);
-  chart.update('none');
-
   let buffer;
-  if (format === 'jpeg' || format === 'jpg') {
-    buffer = canvas.toBuffer('image/jpeg', 90);
-  } else if (format === 'webp') {
-    buffer = canvas.toBuffer('image/webp', 90);
-  } else {
-    buffer = canvas.toBuffer('image/png');
+  try {
+    chart.update('none');
+    if (format === 'jpeg' || format === 'jpg') {
+      buffer = canvas.toBuffer('image/jpeg', 90);
+    } else if (format === 'webp') {
+      buffer = canvas.toBuffer('image/webp', 90);
+    } else {
+      buffer = canvas.toBuffer('image/png');
+    }
+  } finally {
+    // Selalu destroy walau render error -> ga ada leak listener/canvas.
+    chart.destroy();
   }
-
-  chart.destroy();
   return buffer;
 }
 

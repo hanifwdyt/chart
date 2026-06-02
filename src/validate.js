@@ -13,6 +13,42 @@ const LIMITS = {
   devicePixelRatio: { min: 1, max: 4, def: 2 },
 };
 
+// Batas anti-DoS: cegah render super berat yang nge-block event loop / OOM.
+const MAX_PIXELS = 4_000_000;     // ~2000x2000 px efektif (setelah dpr)
+const MAX_DATASETS = 50;
+const MAX_POINTS = 5000;          // per dataset
+const PROTO_KEYS = new Set(['__proto__', 'constructor', 'prototype']);
+
+// Tolak key berbahaya secara rekursif (anti prototype-pollution sebelum
+// object user dilempar ke deep-merge Chart.js).
+function rejectProtoKeys(obj, depth = 0) {
+  if (depth > 12 || obj === null || typeof obj !== 'object') return;
+  if (Array.isArray(obj)) {
+    for (const item of obj) rejectProtoKeys(item, depth + 1);
+    return;
+  }
+  for (const k of Object.keys(obj)) {
+    if (PROTO_KEYS.has(k)) throw new ValidationError(`Key "${k}" tidak diizinkan.`);
+    rejectProtoKeys(obj[k], depth + 1);
+  }
+}
+
+// Validasi ukuran struktur data biar ga bisa di-flood titik tak terbatas.
+function validateDataSize(data) {
+  const datasets = data.datasets;
+  if (!Array.isArray(datasets)) {
+    throw new ValidationError('Field "data.datasets" harus berupa array.');
+  }
+  if (datasets.length > MAX_DATASETS) {
+    throw new ValidationError(`Maksimal ${MAX_DATASETS} datasets.`);
+  }
+  for (const ds of datasets) {
+    if (ds && Array.isArray(ds.data) && ds.data.length > MAX_POINTS) {
+      throw new ValidationError(`Maksimal ${MAX_POINTS} data points per dataset.`);
+    }
+  }
+}
+
 function clampNum(val, { min, max, def }) {
   const n = Number(val);
   if (!Number.isFinite(n)) return def;
@@ -36,6 +72,7 @@ export function normalizeRequest(body = {}) {
   if (typeof body !== 'object' || body === null) {
     throw new ValidationError('Body harus berupa JSON object.');
   }
+  rejectProtoKeys(body);
 
   let { chart, type, data, options } = body;
 
@@ -56,6 +93,7 @@ export function normalizeRequest(body = {}) {
   if (!config.data || typeof config.data !== 'object') {
     throw new ValidationError('Field "data" wajib berupa object { labels, datasets }.');
   }
+  validateDataSize(config.data);
 
   config = applyTypeAlias(config);
 
@@ -64,11 +102,22 @@ export function normalizeRequest(body = {}) {
     throw new ValidationError(`Format "${format}" ga didukung. Pilih: ${SUPPORTED_FORMATS.join(', ')}.`);
   }
 
+  const width = clampNum(body.width, LIMITS.width);
+  const height = clampNum(body.height, LIMITS.height);
+  const devicePixelRatio = clampNum(body.devicePixelRatio ?? body.dpr, LIMITS.devicePixelRatio);
+
+  // Cap total pixel area (setelah dpr) — cegah canvas raksasa yang nge-freeze server.
+  if (width * devicePixelRatio * height * devicePixelRatio > MAX_PIXELS) {
+    throw new ValidationError(
+      `Canvas terlalu besar. Maksimal ${MAX_PIXELS.toLocaleString('en')} pixel efektif (width × height × dpr²).`
+    );
+  }
+
   return {
     config,
-    width: clampNum(body.width, LIMITS.width),
-    height: clampNum(body.height, LIMITS.height),
-    devicePixelRatio: clampNum(body.devicePixelRatio ?? body.dpr, LIMITS.devicePixelRatio),
+    width,
+    height,
+    devicePixelRatio,
     backgroundColor: typeof body.backgroundColor === 'string' ? body.backgroundColor : '#ffffff',
     format,
     watermark: body.watermark === false ? false : true,

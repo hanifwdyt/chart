@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Documentation — chart.hanif.app</title>
+  <meta name="description" content="Complete API reference for chart.hanif.app: POST and GET endpoints, every parameter, supported chart types and aliases, error handling, and copy-paste examples in cURL, JavaScript and Python." />
+  <link rel="canonical" href="https://chart.hanif.app/docs" />
+  <meta name="theme-color" content="#f3f0e8" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="chart.hanif.app" />
+  <meta property="og:title" content="API Documentation — chart.hanif.app" />
+  <meta property="og:description" content="Endpoints, parameters, chart types, errors and code examples for the chart-image API." />
+  <meta property="og:url" content="https://chart.hanif.app/docs" />
+  <meta property="og:image" content="https://chart.hanif.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://chart.hanif.app/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/site.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%232730ff'/><rect x='20' y='54' width='13' height='26' fill='white'/><rect x='43' y='38' width='13' height='42' fill='white'/><rect x='66' y='24' width='13' height='56' fill='white'/></svg>" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "chart.hanif.app API Documentation",
+    "description": "Reference for the chart-image rendering API: endpoints, parameters, chart types and examples.",
+    "url": "https://chart.hanif.app/docs"
+  }
+  </script>
+  <script type="module" src="/js/site.js"></script>
+</head>
+<body>
+  <header class="site-head">
+    <a class="logo" href="/" aria-label="chart.hanif.app home">
+      <span class="logo-mark"><svg viewBox="0 0 100 100" aria-hidden="true"><rect x="14" y="54" width="16" height="32" fill="white"/><rect x="42" y="34" width="16" height="52" fill="white"/><rect x="70" y="18" width="16" height="68" fill="white"/></svg></span>
+      <span>chart<span class="tld">.</span><b>hanif</b><span class="tld">.app</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a class="navlink" href="/playground">Playground</a>
+      <a class="navlink" href="/gallery">Gallery</a>
+      <a class="navlink" href="/docs" aria-current="page">Docs</a>
+      <a class="navlink" href="/pricing">Pricing</a>
+      <a class="btn btn--sm btn--cobalt" href="/playground">Open Playground <span class="arr">→</span></a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+  </header>
+
+  <main>
+    <section class="page-hero wrap">
+      <p class="fig-label">Fig. — Reference</p>
+      <h1 class="display">API documentation</h1>
+      <p class="lede">Base URL <code class="mono" style="color:var(--cobalt-ink);">https://chart.hanif.app</code>. Two endpoints, a handful of parameters, zero ceremony.</p>
+    </section>
+
+    <section class="wrap" style="padding-block:clamp(40px,5vw,64px);">
+      <div class="docs-layout">
+        <aside class="docs-toc" aria-label="On this page">
+          <a href="#overview">Overview</a>
+          <a href="#post">POST /chart</a>
+          <a href="#get">GET /chart</a>
+          <a href="#params">Parameters</a>
+          <a href="#types">Chart types</a>
+          <a href="#aliases">Type aliases</a>
+          <a href="#auto">Auto-theming</a>
+          <a href="#meta">Metadata endpoints</a>
+          <a href="#limits">Limits</a>
+          <a href="#errors">Errors</a>
+          <a href="#examples">Code examples</a>
+        </aside>
+
+        <div class="docs-body">
+          <article id="overview">
+            <h3>Overview</h3>
+            <p>chart.hanif.app accepts a chart config (the Chart.js shape) and returns a rendered image. Two ways to call it:</p>
+            <ul>
+              <li><strong>POST</strong> with a JSON body — best for large or programmatic data.</li>
+              <li><strong>GET</strong> with the config in the query string — best for dropping straight into an <code>&lt;img src&gt;</code>.</li>
+            </ul>
+            <p>Every image carries a <code>chart.hanif.app</code> watermark in the bottom-right corner. It can be disabled with <code>watermark: false</code>.</p>
+          </article>
+
+          <article id="post">
+            <h3><code>POST</code> /api/v1/chart</h3>
+            <p>Send JSON, receive an image with <code>Content-Type</code> matching the requested <code>format</code>.</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>cURL</span><button class="copy-code">Copy</button></div>
+<pre><code>curl -X POST https://chart.hanif.app/api/v1/chart \
+  -H "Content-Type: application/json" \
+  -o chart.png \
+  -d '{
+    "type": "bar",
+    "data": {
+      "labels": ["Jan", "Feb", "Mar"],
+      "datasets": [{ "label": "Sales", "data": [12, 19, 8] }]
+    },
+    "width": 800,
+    "height": 500,
+    "format": "png"
+  }'</code></pre>
+            </div>
+            <p>The body accepts either a <strong>flat</strong> shape (<code>type</code>, <code>data</code>, <code>options</code> at the root) or a <strong>nested</strong> one (wrapped in <code>chart</code>):</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · nested</span><button class="copy-code">Copy</button></div>
+<pre><code>{
+  "chart": { "type": "line", "data": { }, "options": { } },
+  "width": 800,
+  "height": 500,
+  "backgroundColor": "#ffffff",
+  "format": "png",
+  "watermark": true
+}</code></pre>
+            </div>
+          </article>
+
+          <article id="get">
+            <h3><code>GET</code> /api/v1/chart</h3>
+            <p>Pass the config through the <code>c</code> query parameter — either URL-encoded JSON or base64-encoded JSON. Perfect for embedding:</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>HTML</span><button class="copy-code">Copy</button></div>
+<pre><code>&lt;img src="https://chart.hanif.app/api/v1/chart?c=
+  {%22type%22:%22pie%22,%22data%22:{%22labels%22:[%22A%22,%22B%22],
+  %22datasets%22:[{%22data%22:[60,40]}]}}&width=400" /&gt;</code></pre>
+            </div>
+            <p>Extra options (<code>width</code>, <code>height</code>, <code>format</code>, <code>backgroundColor</code>, <code>watermark</code>) ride alongside as ordinary query params.</p>
+            <p class="tip">Use base64 for larger configs to keep the URL clean: <code>?c=&lt;base64-json&gt;</code>.</p>
+          </article>
+
+          <article id="params">
+            <h3>Parameters</h3>
+            <table class="params">
+              <thead><tr><th>Param</th><th>Type</th><th>Default</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td><code>type</code> / <code>chart.type</code></td><td>string</td><td>—</td><td><strong>Required.</strong> Chart type.</td></tr>
+                <tr><td><code>data</code> / <code>chart.data</code></td><td>object</td><td>—</td><td><strong>Required.</strong> <code>{ labels, datasets }</code>.</td></tr>
+                <tr><td><code>options</code></td><td>object</td><td><code>{}</code></td><td>Chart.js options (title, scales, legend…).</td></tr>
+                <tr><td><code>width</code></td><td>number</td><td><code>800</code></td><td>Pixels, 50–3000.</td></tr>
+                <tr><td><code>height</code></td><td>number</td><td><code>600</code></td><td>Pixels, 50–3000.</td></tr>
+                <tr><td><code>devicePixelRatio</code></td><td>number</td><td><code>2</code></td><td>Crispness multiplier, 1–4.</td></tr>
+                <tr><td><code>backgroundColor</code></td><td>string</td><td><code>#ffffff</code></td><td>Any CSS color, or <code>transparent</code>.</td></tr>
+                <tr><td><code>format</code></td><td>string</td><td><code>png</code></td><td><code>png</code> · <code>jpeg</code> · <code>webp</code>.</td></tr>
+                <tr><td><code>watermark</code></td><td>boolean</td><td><code>true</code></td><td>Show the domain watermark.</td></tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article id="types">
+            <h3>Chart types</h3>
+            <p>Native Chart.js types plus a few convenience aliases:</p>
+            <div class="chips" id="typeChips"></div>
+          </article>
+
+          <article id="aliases">
+            <h3>Type aliases</h3>
+            <table class="params">
+              <thead><tr><th>Alias</th><th>Becomes</th><th>Effect</th></tr></thead>
+              <tbody>
+                <tr><td><code>area</code></td><td>line</td><td>All datasets get <code>fill: true</code>.</td></tr>
+                <tr><td><code>horizontalBar</code></td><td>bar</td><td><code>indexAxis: 'y'</code>.</td></tr>
+                <tr><td><code>stackedBar</code></td><td>bar</td><td>x &amp; y axes <code>stacked: true</code>.</td></tr>
+                <tr><td><code>mixed</code></td><td>bar</td><td>Each dataset may set its own <code>type</code> (bar/line).</td></tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article id="auto">
+            <h3>Auto-theming</h3>
+            <p>If you omit colors and labels, the renderer fills the gaps so output looks intentional out of the box:</p>
+            <ul>
+              <li>Datasets without colors get a balanced brand palette (arc charts get per-segment colors).</li>
+              <li>A single unlabeled dataset hides its legend instead of printing <code>undefined</code>; multiple unlabeled datasets become <code>Series 1</code>, <code>Series 2</code>…</li>
+              <li>Sensible line tension, point sizes, bar radius, fonts and grid colors are applied — all overridable via <code>options</code>.</li>
+            </ul>
+          </article>
+
+          <article id="meta">
+            <h3>Metadata endpoints</h3>
+            <table class="params">
+              <thead><tr><th>Endpoint</th><th>Returns</th></tr></thead>
+              <tbody>
+                <tr><td><code>GET /api/v1/types</code></td><td>Supported types, formats and presets.</td></tr>
+                <tr><td><code>GET /api/v1/presets</code></td><td>All preset configs.</td></tr>
+                <tr><td><code>GET /api/v1/presets/:key</code></td><td>One preset config (e.g. <code>bar</code>).</td></tr>
+                <tr><td><code>GET /health</code> · <code>/livez</code> · <code>/readyz</code></td><td>Liveness &amp; readiness.</td></tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article id="limits">
+            <h3>Limits</h3>
+            <ul>
+              <li>Effective canvas area is capped at <strong>4,000,000 pixels</strong> (width × height × dpr²).</li>
+              <li>Up to <strong>50 datasets</strong>, <strong>5,000 points</strong> per dataset.</li>
+              <li>Request body capped at <strong>512&nbsp;KB</strong>.</li>
+              <li>Anonymous rate limit applies per IP; identical requests are served from cache (<code>X-Cache: HIT</code>).</li>
+            </ul>
+          </article>
+
+          <article id="errors">
+            <h3>Errors</h3>
+            <p>Errors return JSON with an appropriate HTTP status (<code>400</code> for validation, <code>429</code> rate-limited, <code>500</code> render). Server-side detail is never leaked on 5xx.</p>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JSON · 400</span><button class="copy-code">Copy</button></div>
+<pre><code>{
+  "error": "ValidationError",
+  "message": "Field \"type\" wajib diisi."
+}</code></pre>
+            </div>
+          </article>
+
+          <article id="examples">
+            <h3>Code examples</h3>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>JavaScript (fetch)</span><button class="copy-code">Copy</button></div>
+<pre><code>const res = await fetch("https://chart.hanif.app/api/v1/chart", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    type: "line",
+    data: {
+      labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+      datasets: [{ label: "Visitors", data: [120, 190, 170, 220, 280] }]
+    }
+  })
+});
+const blob = await res.blob();
+document.querySelector("img").src = URL.createObjectURL(blob);</code></pre>
+            </div>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>Python (requests)</span><button class="copy-code">Copy</button></div>
+<pre><code>import requests
+
+payload = {
+    "type": "doughnut",
+    "data": {
+        "labels": ["Done", "Doing", "Pending"],
+        "datasets": [{"data": [70, 20, 10]}]
+    },
+    "width": 600, "height": 600
+}
+r = requests.post("https://chart.hanif.app/api/v1/chart", json=payload)
+open("chart.png", "wb").write(r.content)</code></pre>
+            </div>
+            <div class="codeframe" data-code>
+              <div class="cf-head"><span>Shell (base64 GET)</span><button class="copy-code">Copy</button></div>
+<pre><code>CFG=$(echo '{"type":"bar","data":{"labels":["A","B"],"datasets":[{"data":[5,9]}]}}' | base64)
+curl "https://chart.hanif.app/api/v1/chart?c=$CFG&width=600" -o chart.png</code></pre>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="foot-word" aria-hidden="true" style="border-top:1.5px solid var(--ink);padding-top:30px;">chart.hanif.app</div>
+    <div class="foot-bottom">
+      <span>© <span data-year>2026</span> chart.hanif.app</span>
+      <span><a href="/" class="link-tick">Home</a> · <a href="/playground" class="link-tick">Playground</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/docs.js"></script>
+</body>
+</html>

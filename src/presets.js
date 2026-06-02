@@ -1,114 +1,114 @@
-// Preset config tiap jenis chart — dipakai gallery, playground default, & dokumentasi.
+// Preset config for each chart type — used by gallery, playground defaults & docs.
 
 const PALETTE = ['#6366f1', '#06b6d4', '#f43f5e', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899'];
 
 export const PRESETS = {
   bar: {
     label: 'Bar',
-    desc: 'Bandingin nilai antar kategori.',
+    desc: 'Compare values across categories.',
     config: {
       type: 'bar',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-        datasets: [{ label: 'Penjualan', data: [12, 19, 8, 15, 22, 17], backgroundColor: PALETTE[0] }],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{ label: 'Sales', data: [12, 19, 8, 15, 22, 17], backgroundColor: PALETTE[0] }],
       },
-      options: { plugins: { title: { display: true, text: 'Penjualan per Bulan' } } },
+      options: { plugins: { title: { display: true, text: 'Monthly Sales' } } },
     },
   },
   line: {
     label: 'Line',
-    desc: 'Tren data sepanjang waktu.',
+    desc: 'Trends over time.',
     config: {
       type: 'line',
       data: {
-        labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
         datasets: [
-          { label: 'Visitor', data: [120, 190, 170, 220, 280, 310, 250], borderColor: PALETTE[0], backgroundColor: PALETTE[0], tension: 0.35 },
-          { label: 'Signup', data: [30, 45, 40, 60, 75, 90, 70], borderColor: PALETTE[1], backgroundColor: PALETTE[1], tension: 0.35 },
+          { label: 'Visitors', data: [120, 190, 170, 220, 280, 310, 250], borderColor: PALETTE[0], backgroundColor: PALETTE[0], tension: 0.35 },
+          { label: 'Signups', data: [30, 45, 40, 60, 75, 90, 70], borderColor: PALETTE[1], backgroundColor: PALETTE[1], tension: 0.35 },
         ],
       },
-      options: { plugins: { title: { display: true, text: 'Traffic Mingguan' } } },
+      options: { plugins: { title: { display: true, text: 'Weekly Traffic' } } },
     },
   },
   area: {
     label: 'Area',
-    desc: 'Line dengan fill — volume kumulatif.',
+    desc: 'Line with fill — cumulative volume.',
     config: {
       type: 'area',
       data: {
         labels: ['Q1', 'Q2', 'Q3', 'Q4'],
         datasets: [{ label: 'Revenue', data: [45, 62, 58, 81], borderColor: PALETTE[4], backgroundColor: 'rgba(16,185,129,0.25)', tension: 0.3 }],
       },
-      options: { plugins: { title: { display: true, text: 'Revenue per Kuartal' } } },
+      options: { plugins: { title: { display: true, text: 'Revenue per Quarter' } } },
     },
   },
   horizontalBar: {
     label: 'Horizontal Bar',
-    desc: 'Bar mendatar — enak buat label panjang.',
+    desc: 'Bars on their side — great for long labels.',
     config: {
       type: 'horizontalBar',
       data: {
-        labels: ['Indonesia', 'Malaysia', 'Singapura', 'Thailand', 'Vietnam'],
-        datasets: [{ label: 'Pengguna (juta)', data: [180, 28, 5, 42, 70], backgroundColor: PALETTE.slice(0, 5) }],
+        labels: ['Indonesia', 'Malaysia', 'Singapore', 'Thailand', 'Vietnam'],
+        datasets: [{ label: 'Users (millions)', data: [180, 28, 5, 42, 70], backgroundColor: PALETTE.slice(0, 5) }],
       },
-      options: { plugins: { title: { display: true, text: 'Pengguna per Negara' } } },
+      options: { plugins: { title: { display: true, text: 'Users by Country' } } },
     },
   },
   stackedBar: {
     label: 'Stacked Bar',
-    desc: 'Komposisi bertumpuk per kategori.',
+    desc: 'Stacked composition per category.',
     config: {
       type: 'stackedBar',
       data: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr'],
         datasets: [
-          { label: 'Produk A', data: [12, 19, 8, 15], backgroundColor: PALETTE[0] },
-          { label: 'Produk B', data: [8, 11, 14, 9], backgroundColor: PALETTE[1] },
-          { label: 'Produk C', data: [5, 7, 6, 12], backgroundColor: PALETTE[3] },
+          { label: 'Product A', data: [12, 19, 8, 15], backgroundColor: PALETTE[0] },
+          { label: 'Product B', data: [8, 11, 14, 9], backgroundColor: PALETTE[1] },
+          { label: 'Product C', data: [5, 7, 6, 12], backgroundColor: PALETTE[3] },
         ],
       },
-      options: { plugins: { title: { display: true, text: 'Penjualan per Produk' } } },
+      options: { plugins: { title: { display: true, text: 'Sales by Product' } } },
     },
   },
   pie: {
     label: 'Pie',
-    desc: 'Proporsi bagian dari keseluruhan.',
+    desc: 'Parts of a whole.',
     config: {
       type: 'pie',
       data: {
         labels: ['Mobile', 'Desktop', 'Tablet'],
         datasets: [{ data: [62, 30, 8], backgroundColor: PALETTE.slice(0, 3) }],
       },
-      options: { plugins: { title: { display: true, text: 'Trafik per Device' } } },
+      options: { plugins: { title: { display: true, text: 'Traffic by Device' } } },
     },
   },
   doughnut: {
     label: 'Doughnut',
-    desc: 'Pie dengan lubang tengah.',
+    desc: 'A pie with a hole in the middle.',
     config: {
       type: 'doughnut',
       data: {
-        labels: ['Selesai', 'Proses', 'Pending'],
+        labels: ['Done', 'Doing', 'Pending'],
         datasets: [{ data: [70, 20, 10], backgroundColor: [PALETTE[4], PALETTE[3], PALETTE[2]] }],
       },
-      options: { plugins: { title: { display: true, text: 'Status Task' } } },
+      options: { plugins: { title: { display: true, text: 'Task Status' } } },
     },
   },
   polarArea: {
     label: 'Polar Area',
-    desc: 'Radial — nilai dengan radius berbeda.',
+    desc: 'Radial — values as varying radii.',
     config: {
       type: 'polarArea',
       data: {
         labels: ['Speed', 'Reliability', 'Comfort', 'Safety', 'Efficiency'],
         datasets: [{ data: [11, 16, 7, 14, 9], backgroundColor: PALETTE.map((c) => c + 'cc') }],
       },
-      options: { plugins: { title: { display: true, text: 'Skor Performa' } } },
+      options: { plugins: { title: { display: true, text: 'Performance Score' } } },
     },
   },
   radar: {
     label: 'Radar',
-    desc: 'Banding beberapa metrik multi-axis.',
+    desc: 'Compare metrics across many axes.',
     config: {
       type: 'radar',
       data: {
@@ -123,41 +123,41 @@ export const PRESETS = {
   },
   scatter: {
     label: 'Scatter',
-    desc: 'Sebaran titik X-Y, korelasi.',
+    desc: 'X–Y point cloud, correlation.',
     config: {
       type: 'scatter',
       data: {
         datasets: [{
-          label: 'Tinggi vs Berat',
+          label: 'Height vs Weight',
           data: [{ x: 160, y: 55 }, { x: 165, y: 60 }, { x: 170, y: 68 }, { x: 175, y: 72 }, { x: 180, y: 80 }, { x: 185, y: 88 }],
           backgroundColor: PALETTE[5],
         }],
       },
-      options: { plugins: { title: { display: true, text: 'Korelasi Tinggi-Berat' } } },
+      options: { plugins: { title: { display: true, text: 'Height–Weight Correlation' } } },
     },
   },
   bubble: {
     label: 'Bubble',
-    desc: 'Scatter dengan dimensi ukuran (r).',
+    desc: 'Scatter with a size dimension (r).',
     config: {
       type: 'bubble',
       data: {
         datasets: [{
-          label: 'Produk',
+          label: 'Products',
           data: [{ x: 20, y: 30, r: 15 }, { x: 40, y: 10, r: 10 }, { x: 30, y: 50, r: 25 }, { x: 60, y: 35, r: 18 }],
           backgroundColor: 'rgba(6,182,212,0.6)',
         }],
       },
-      options: { plugins: { title: { display: true, text: 'Harga vs Penjualan vs Margin' } } },
+      options: { plugins: { title: { display: true, text: 'Price vs Sales vs Margin' } } },
     },
   },
   mixed: {
     label: 'Mixed',
-    desc: 'Gabung bar + line dalam satu chart.',
+    desc: 'Combine bar + line in one chart.',
     config: {
       type: 'mixed',
       data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
         datasets: [
           { type: 'bar', label: 'Revenue', data: [40, 55, 48, 70, 62], backgroundColor: PALETTE[0] },
           { type: 'line', label: 'Target', data: [50, 50, 60, 60, 70], borderColor: PALETTE[2], tension: 0.3 },

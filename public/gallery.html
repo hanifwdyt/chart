@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gallery — every chart type · chart.hanif.app</title>
+  <meta name="description" content="A live specimen catalog of every chart type chart.hanif.app renders: bar, line, area, pie, doughnut, radar, polar area, scatter, bubble, stacked, horizontal and mixed. Click any to open it in the playground." />
+  <link rel="canonical" href="https://chart.hanif.app/gallery" />
+  <meta name="theme-color" content="#f3f0e8" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="chart.hanif.app" />
+  <meta property="og:title" content="Gallery — every chart type · chart.hanif.app" />
+  <meta property="og:description" content="Live specimen catalog of 12+ chart types. Click any to open in the playground." />
+  <meta property="og:url" content="https://chart.hanif.app/gallery" />
+  <meta property="og:image" content="https://chart.hanif.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://chart.hanif.app/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/site.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%232730ff'/><rect x='20' y='54' width='13' height='26' fill='white'/><rect x='43' y='38' width='13' height='42' fill='white'/><rect x='66' y='24' width='13' height='56' fill='white'/></svg>" />
+  <script type="module" src="/js/site.js"></script>
+</head>
+<body>
+  <header class="site-head">
+    <a class="logo" href="/" aria-label="chart.hanif.app home">
+      <span class="logo-mark"><svg viewBox="0 0 100 100" aria-hidden="true"><rect x="14" y="54" width="16" height="32" fill="white"/><rect x="42" y="34" width="16" height="52" fill="white"/><rect x="70" y="18" width="16" height="68" fill="white"/></svg></span>
+      <span>chart<span class="tld">.</span><b>hanif</b><span class="tld">.app</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a class="navlink" href="/playground">Playground</a>
+      <a class="navlink" href="/gallery" aria-current="page">Gallery</a>
+      <a class="navlink" href="/docs">Docs</a>
+      <a class="navlink" href="/pricing">Pricing</a>
+      <a class="btn btn--sm btn--cobalt" href="/playground">Open Playground <span class="arr">→</span></a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+  </header>
+
+  <main>
+    <section class="page-hero wrap">
+      <p class="fig-label">Fig. — Specimen catalog</p>
+      <h1 class="display">The chart<br /><span class="serif-italic">catalogue.</span></h1>
+      <p class="lede">Twelve-plus types, each rendered on the fly by the same API you'd call in production. Click any specimen to open its config in the playground.</p>
+    </section>
+
+    <section class="section-pad wrap" style="padding-top:clamp(40px,5vw,64px);">
+      <div id="galGrid" class="gal-grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="foot-word" aria-hidden="true" style="border-top:1.5px solid var(--ink);padding-top:30px;">chart.hanif.app</div>
+    <div class="foot-bottom">
+      <span>© <span data-year>2026</span> chart.hanif.app</span>
+      <span><a href="/" class="link-tick">Home</a> · <a href="/docs" class="link-tick">Docs</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/gallery.js"></script>
+</body>
+</html>

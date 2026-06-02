@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playground — chart.hanif.app</title>
+  <meta name="description" content="Edit a JSON chart config and preview the rendered image in real time. Tune size, format, background and watermark, then copy a ready-to-embed URL." />
+  <link rel="canonical" href="https://chart.hanif.app/playground" />
+  <meta name="theme-color" content="#f3f0e8" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="chart.hanif.app" />
+  <meta property="og:title" content="Playground — chart.hanif.app" />
+  <meta property="og:description" content="Edit JSON, preview the chart image live, copy an embeddable URL." />
+  <meta property="og:url" content="https://chart.hanif.app/playground" />
+  <meta property="og:image" content="https://chart.hanif.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://chart.hanif.app/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/site.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%232730ff'/><rect x='20' y='54' width='13' height='26' fill='white'/><rect x='43' y='38' width='13' height='42' fill='white'/><rect x='66' y='24' width='13' height='56' fill='white'/></svg>" />
+  <script type="module" src="/js/site.js"></script>
+</head>
+<body>
+  <header class="site-head">
+    <a class="logo" href="/" aria-label="chart.hanif.app home">
+      <span class="logo-mark"><svg viewBox="0 0 100 100" aria-hidden="true"><rect x="14" y="54" width="16" height="32" fill="white"/><rect x="42" y="34" width="16" height="52" fill="white"/><rect x="70" y="18" width="16" height="68" fill="white"/></svg></span>
+      <span>chart<span class="tld">.</span><b>hanif</b><span class="tld">.app</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a class="navlink" href="/playground" aria-current="page">Playground</a>
+      <a class="navlink" href="/gallery">Gallery</a>
+      <a class="navlink" href="/docs">Docs</a>
+      <a class="navlink" href="/pricing">Pricing</a>
+      <a class="btn btn--sm btn--cobalt" href="/docs">API Docs <span class="arr">→</span></a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+  </header>
+
+  <main class="wrap" style="padding-top:clamp(36px,5vw,60px);padding-bottom:clamp(60px,8vw,100px);">
+    <p class="fig-label">Fig. — Live editor</p>
+    <h1 class="display" style="font-size:clamp(38px,6vw,72px);margin-bottom:16px;">Playground</h1>
+    <p class="lede" style="margin-bottom:32px;">Edit the config on the left, preview on the right. Everything renders through the real API — the URL below is exactly what you'd embed. <span class="mono" style="font-size:13px;color:var(--ink-mute);">⌘/Ctrl + Enter to render.</span></p>
+
+    <div class="pg-toolbar">
+      <label>Preset<select id="presetSelect"></select></label>
+      <label>Width<input id="pgWidth" type="number" value="800" min="50" max="3000" /></label>
+      <label>Height<input id="pgHeight" type="number" value="500" min="50" max="3000" /></label>
+      <label>Format<select id="pgFormat"><option value="png">PNG</option><option value="jpeg">JPEG</option><option value="webp">WebP</option></select></label>
+      <label>Background<input id="pgBg" type="text" value="#ffffff" /></label>
+      <label class="chk"><input id="pgWatermark" type="checkbox" checked /> Watermark</label>
+    </div>
+
+    <div class="pg-grid">
+      <div class="pg-pane">
+        <div class="pg-pane-head"><span>config.json</span><button id="renderBtn" class="btn btn--sm btn--cobalt">▶ Render</button></div>
+        <textarea id="configInput" spellcheck="false"></textarea>
+        <div id="pgError" class="pg-error" hidden></div>
+      </div>
+      <div class="pg-pane">
+        <div class="pg-pane-head"><span>output</span><div class="pg-actions"><button id="copyUrlBtn" class="copy-code" style="border-color:var(--ink);color:var(--ink-soft);">Copy URL</button><a id="downloadBtn" class="copy-code" style="border-color:var(--ink);color:var(--ink-soft);text-decoration:none;" download="chart.png">Download</a></div></div>
+        <div class="pg-canvas">
+          <img id="pgImg" alt="Rendered chart preview" />
+          <div id="pgLoading" class="pg-loading" hidden>rendering…</div>
+        </div>
+      </div>
+    </div>
+    <div class="pg-url"><span class="lbl">GET URL →</span><code id="pgUrl"></code></div>
+  </main>
+
+  <footer class="site-foot">
+    <div class="foot-word" aria-hidden="true" style="border-top:1.5px solid var(--ink);padding-top:30px;">chart.hanif.app</div>
+    <div class="foot-bottom">
+      <span>© <span data-year>2026</span> chart.hanif.app</span>
+      <span><a href="/" class="link-tick">Home</a> · <a href="/docs" class="link-tick">Docs</a></span>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/playground.js"></script>
+</body>
+</html>

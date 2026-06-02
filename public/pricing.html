@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pricing — chart.hanif.app</title>
+  <meta name="description" content="Simple, scale-as-you-go pricing for the chart-image API. Start free with a watermark, upgrade for unmarked images, higher limits and priority rendering." />
+  <link rel="canonical" href="https://chart.hanif.app/pricing" />
+  <meta name="theme-color" content="#f3f0e8" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="chart.hanif.app" />
+  <meta property="og:title" content="Pricing — chart.hanif.app" />
+  <meta property="og:description" content="Start free, upgrade for unmarked images and higher limits." />
+  <meta property="og:url" content="https://chart.hanif.app/pricing" />
+  <meta property="og:image" content="https://chart.hanif.app/og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://chart.hanif.app/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/site.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='14' fill='%232730ff'/><rect x='20' y='54' width='13' height='26' fill='white'/><rect x='43' y='38' width='13' height='42' fill='white'/><rect x='66' y='24' width='13' height='56' fill='white'/></svg>" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Do I need an API key to start?", "acceptedAnswer": { "@type": "Answer", "text": "No. The free tier works with no key — just call the endpoint. Keys arrive with paid plans for higher limits and unmarked images." } },
+      { "@type": "Question", "name": "Can I remove the watermark?", "acceptedAnswer": { "@type": "Answer", "text": "On the free tier images are watermarked. Paid plans render without the chart.hanif.app watermark." } },
+      { "@type": "Question", "name": "What are the rate limits?", "acceptedAnswer": { "@type": "Answer", "text": "The anonymous tier is rate-limited per IP and identical requests are cached. Paid plans raise the limits per API key." } }
+    ]
+  }
+  </script>
+  <script type="module" src="/js/site.js"></script>
+</head>
+<body>
+  <header class="site-head">
+    <a class="logo" href="/" aria-label="chart.hanif.app home">
+      <span class="logo-mark"><svg viewBox="0 0 100 100" aria-hidden="true"><rect x="14" y="54" width="16" height="32" fill="white"/><rect x="42" y="34" width="16" height="52" fill="white"/><rect x="70" y="18" width="16" height="68" fill="white"/></svg></span>
+      <span>chart<span class="tld">.</span><b>hanif</b><span class="tld">.app</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a class="navlink" href="/playground">Playground</a>
+      <a class="navlink" href="/gallery">Gallery</a>
+      <a class="navlink" href="/docs">Docs</a>
+      <a class="navlink" href="/pricing" aria-current="page">Pricing</a>
+      <a class="btn btn--sm btn--cobalt" href="/playground">Open Playground <span class="arr">→</span></a>
+    </nav>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span></span></button>
+  </header>
+
+  <main>
+    <section class="page-hero wrap">
+      <p class="fig-label">Fig. — Plans</p>
+      <h1 class="display">Pay as you <span class="serif-italic">plot.</span></h1>
+      <p class="lede">Start free, no card. Upgrade when you need unmarked images, higher throughput and priority rendering.</p>
+    </section>
+
+    <section class="section-pad wrap" style="padding-top:clamp(44px,5vw,68px);">
+      <div class="price-grid">
+        <div class="price-card reveal">
+          <span class="tier">Free</span>
+          <div class="amt">$0<small> / forever</small></div>
+          <p class="pdesc">For side projects, prototypes and trying it out.</p>
+          <ul>
+            <li>All 12+ chart types</li>
+            <li>PNG · JPEG · WebP</li>
+            <li>Watermarked images</li>
+            <li>Per-IP rate limit + caching</li>
+            <li>Community support</li>
+          </ul>
+          <a class="btn btn--ghost" href="/playground">Start free <span class="arr">→</span></a>
+        </div>
+
+        <div class="price-card feature reveal" data-d="1">
+          <span class="tier">Pro <span class="badge-pill">Popular</span></span>
+          <div class="amt">$19<small> / month</small></div>
+          <p class="pdesc">For products shipping charts to real users.</p>
+          <ul>
+            <li>Everything in Free</li>
+            <li><strong>No watermark</strong></li>
+            <li>API keys + higher rate limits</li>
+            <li>Priority render queue</li>
+            <li>Custom default themes</li>
+            <li>Email support</li>
+          </ul>
+          <a class="btn btn--cobalt" href="/playground">Get started <span class="arr">→</span></a>
+        </div>
+
+        <div class="price-card reveal" data-d="2">
+          <span class="tier">Business</span>
+          <div class="amt">Custom</div>
+          <p class="pdesc">For scale, SLAs and dedicated infrastructure.</p>
+          <ul>
+            <li>Everything in Pro</li>
+            <li>Volume pricing &amp; usage metering</li>
+            <li>Dedicated / self-hosted option</li>
+            <li>Uptime SLA</li>
+            <li>Priority support</li>
+          </ul>
+          <a class="btn btn--ghost" href="/docs">Talk to us <span class="arr">→</span></a>
+        </div>
+      </div>
+
+      <p class="mono" style="font-size:12px;color:var(--ink-mute);margin-top:22px;text-align:center;">Paid plans &amp; API keys are rolling out — the free tier is fully live today.</p>
+    </section>
+
+    <section class="section-pad wrap" style="padding-top:0;">
+      <p class="fig-label reveal">Fig. — Questions</p>
+      <h2 class="display reveal" data-d="1" style="margin-bottom:28px;">Good to know.</h2>
+      <div class="reveal" data-d="2">
+        <details class="faq-item"><summary>Do I need an API key to start?</summary><p>No. The free tier works with no key — just call the endpoint. Keys arrive with paid plans for higher limits and unmarked images.</p></details>
+        <details class="faq-item"><summary>Can I remove the watermark?</summary><p>On the free tier, images are watermarked with <code>chart.hanif.app</code>. Paid plans render without it.</p></details>
+        <details class="faq-item"><summary>What are the rate limits?</summary><p>The anonymous tier is rate-limited per IP, and identical requests are returned instantly from cache. Paid plans raise the per-key limits and add a priority render queue.</p></details>
+        <details class="faq-item"><summary>Which chart library is under the hood?</summary><p>Chart.js v4, rendered server-side to a native canvas — so the config you write here matches the Chart.js docs you already know.</p></details>
+        <details class="faq-item"><summary>Can I self-host?</summary><p>Yes, on the Business plan. The service ships as a container; reach out for a dedicated or on-prem setup.</p></details>
+      </div>
+    </section>
+
+    <section class="wrap" style="padding-bottom:clamp(60px,8vw,110px);">
+      <div class="cta-band reveal">
+        <h2 class="display">Try it free, <em>right now.</em></h2>
+        <p>No signup to render your first chart. Open the playground and copy a URL in seconds.</p>
+        <a class="btn btn--cobalt" href="/playground">Open playground <span class="arr">→</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <div class="foot-word" aria-hidden="true" style="border-top:1.5px solid var(--ink);padding-top:30px;">chart.hanif.app</div>
+    <div class="foot-bottom">
+      <span>© <span data-year>2026</span> chart.hanif.app</span>
+      <span><a href="/" class="link-tick">Home</a> · <a href="/docs" class="link-tick">Docs</a></span>
+    </div>
+  </footer>
+</body>
+</html>

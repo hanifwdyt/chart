@@ -5,10 +5,20 @@ Chart **image generation API**. Kirim data (config Chart.js) → terima image ch
 Ada juga **website** dengan: landing page, live playground, gallery semua jenis chart, dan API docs lengkap.
 
 ## Stack
-- **Express** — HTTP server & static frontend
-- **Chart.js v4** — chart engine
+- **Express** — HTTP server & static frontend (helmet, rate limit, CORS)
+- **Chart.js v4** — chart engine + auto-theming (brand palette, smart legends)
 - **@napi-rs/canvas** — render ke canvas headless (prebuilt binary, no native build)
-- Frontend vanilla HTML/CSS/JS (no framework)
+- LRU cache + concurrency limiter — efisiensi & backpressure
+- Frontend vanilla HTML/CSS/JS multi-page (no framework), "engineering plotter" design
+
+## Halaman
+- `/` landing · `/playground` editor live · `/gallery` katalog chart · `/docs` API reference · `/pricing` plan SaaS
+- SEO: per-page meta + OG/Twitter, JSON-LD, `robots.txt`, `sitemap.xml`
+
+## Hardening
+- Pixel-area cap (4M px), max 50 datasets / 5000 points, body 512KB
+- Prototype-pollution guard, generic 5xx messages, graceful shutdown
+- `try/finally` destroy chart, rate limit per IP, image cache (`X-Cache: HIT/MISS`)
 
 ## Jalanin lokal
 ```bash
